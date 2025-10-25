@@ -1,7 +1,11 @@
-<script setup></script>
+<script setup>
+import Hero from './components/organisms/Hero.vue'
+</script>
 
 <template>
-  <h1>Hello world!</h1>
+  <Hero data-theme="valentine" />
+  <Hero data-theme="cupcake" />
+  <Hero data-theme="synthwave" />
 </template>
 
 <style scoped></style>
