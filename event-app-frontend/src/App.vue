@@ -1,6 +1,9 @@
-<script setup></script>
+<script setup>
+import TheNavbar from './components/organisms/TheNavbar.vue'
+</script>
 
 <template>
+  <TheNavbar />
   <nav>
     <ul>
       <li>
