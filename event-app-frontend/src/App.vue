@@ -1,26 +1,20 @@
 <script setup>
+import MainFooter from './components/organisms/MainFooter.vue'
 import TheNavbar from './components/organisms/TheNavbar.vue'
+
+const navLinks = [
+  { to: '/', label: 'Home' },
+  { to: '/about', label: 'About' },
+  { to: '/login', label: 'Login' },
+]
 </script>
 
 <template>
-  <TheNavbar />
-  <nav>
-    <ul>
-      <li>
-        <RouterLink to="/">Home</RouterLink>
-      </li>
-      <li>
-        <RouterLink to="/about">About</RouterLink>
-      </li>
-      <li>
-        <RouterLink to="/login">Login</RouterLink>
-      </li>
-    </ul>
-  </nav>
+  <TheNavbar :links="navLinks" />
   <main>
     <RouterView />
   </main>
-  <footer>This is the footer</footer>
+  <MainFooter />
 </template>
 
 <style scoped></style>
