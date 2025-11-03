@@ -1,7 +1,6 @@
 <script setup>
-import TheFooter from './components/organisms/TheFooter.vue'
-import TheFooter from './components/organisms/TheFooter.vue'
 import TheNavbar from './components/organisms/TheNavbar.vue'
+import TheFooter from './components/organisms/TheFooter.vue'
 
 const navLinks = [
   { to: '/', label: 'Home' },
