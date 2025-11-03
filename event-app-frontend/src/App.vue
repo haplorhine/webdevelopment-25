@@ -1,5 +1,6 @@
 <script setup>
-import MainFooter from './components/organisms/MainFooter.vue'
+import TheFooter from './components/organisms/TheFooter.vue'
+import TheFooter from './components/organisms/TheFooter.vue'
 import TheNavbar from './components/organisms/TheNavbar.vue'
 
 const navLinks = [
@@ -10,11 +11,13 @@ const navLinks = [
 </script>
 
 <template>
-  <TheNavbar :links="navLinks" />
-  <main>
-    <RouterView />
-  </main>
-  <MainFooter />
+  <div>
+    <TheNavbar :links="navLinks" />
+    <main>
+      <RouterView />
+    </main>
+    <TheFooter />
+  </div>
 </template>
 
 <style scoped></style>
