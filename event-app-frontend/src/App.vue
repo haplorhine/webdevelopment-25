@@ -1,9 +1,23 @@
-<script setup>
-import Hero from './components/organisms/Hero.vue'
-</script>
+<script setup></script>
 
 <template>
-  <Hero data-theme="cupcake" />
+  <nav>
+    <ul>
+      <li>
+        <RouterLink to="/">Home</RouterLink>
+      </li>
+      <li>
+        <RouterLink to="/about">About</RouterLink>
+      </li>
+      <li>
+        <RouterLink to="/login">Login</RouterLink>
+      </li>
+    </ul>
+  </nav>
+  <main>
+    <RouterView />
+  </main>
+  <footer>This is the footer</footer>
 </template>
 
 <style scoped></style>
