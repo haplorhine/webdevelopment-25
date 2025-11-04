@@ -5,7 +5,7 @@ import TheFooter from './components/organisms/TheFooter.vue'
 const navLinks = [
   { to: '/', label: 'Home' },
   { to: '/about', label: 'About' },
-  { to: '/login', label: 'Login' },
+  { to: '/register', label: 'register' },
 ]
 </script>
 

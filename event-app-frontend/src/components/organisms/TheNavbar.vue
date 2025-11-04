@@ -1,5 +1,6 @@
 <script setup>
 import { RouterLink } from 'vue-router'
+import LoginButton from '../molecules/LoginButton.vue'
 
 defineProps({
   links: {
@@ -75,6 +76,7 @@ defineProps({
           <li><a>Logout</a></li>
         </ul>
       </div>
+      <RouterLink to="/login"><LoginButton /></RouterLink>
     </div>
   </div>
 </template>
