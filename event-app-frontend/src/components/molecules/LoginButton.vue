@@ -1,9 +1,9 @@
 <script setup>
-import UserIcon from '../atoms/UserIcon.vue'
+import AtomUserIcon from '../atoms/AtomUserIcon.vue'
 </script>
 <template>
   <button class="btn bg-white text-black border-[#e5e5e5]">
-    <UserIcon />
+    <AtomUserIcon />
     Login
   </button>
 </template>

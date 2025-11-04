@@ -10,7 +10,7 @@ const navLinks = [
 </script>
 
 <template>
-  <div>
+  <div data-theme="cupcake">
     <TheNavbar :links="navLinks" />
     <main>
       <RouterView />
