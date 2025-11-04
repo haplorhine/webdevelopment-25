@@ -24,8 +24,5 @@
       </div>
     </div>
   </div>
-
-  <label class="label">Email</label>
-  <input type="email" class="" placeholder="Email" />
 </template>
 <style scoped></style>
