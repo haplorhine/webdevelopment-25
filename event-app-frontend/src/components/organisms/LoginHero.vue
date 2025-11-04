@@ -14,9 +14,9 @@
         <div class="card-body">
           <fieldset class="fieldset">
             <label class="label">Email</label>
-            <input type="email" class="input" placeholder="Email" />
+            <input type="email" class="input w-full" placeholder="Email" />
             <label class="label">Password</label>
-            <input type="password" class="input" placeholder="Password" />
+            <input type="password" class="input w-full" placeholder="Password" />
             <div><a class="link link-hover">Forgot password?</a></div>
             <button class="btn btn-neutral mt-4">Login</button>
           </fieldset>
@@ -24,5 +24,8 @@
       </div>
     </div>
   </div>
+
+  <label class="label">Email</label>
+  <input type="email" class="" placeholder="Email" />
 </template>
 <style scoped></style>
