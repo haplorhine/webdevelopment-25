@@ -1,24 +1,34 @@
 package at.technikum.springrestbackend.dto;
 
-
+import at.technikum.springrestbackend.entity.Salutation;
 import at.technikum.springrestbackend.entity.UserType;
-import lombok.AllArgsConstructor;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.Size;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.NoArgsConstructor;
 
 @NoArgsConstructor
-@AllArgsConstructor
 @Getter
 @Setter
 
 public class UserDto {
 
-    private Long userId;
-    private String salutation;
+    @Enumerated(EnumType.STRING)
+    private Salutation salutation;
+
+    @Email
     private String email;
+
+    @Size(min = 5)
     private String username;
+
+    @Enumerated(EnumType.STRING)
     private UserType userType;
+
+    @Enumerated(EnumType.STRING)
     private String country;
 
 
