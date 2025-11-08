@@ -1,5 +1,6 @@
 package at.technikum.springrestbackend.dto;
 
+import at.technikum.springrestbackend.entity.Country;
 import at.technikum.springrestbackend.entity.Salutation;
 import at.technikum.springrestbackend.entity.UserType;
 import jakarta.persistence.EnumType;
@@ -29,7 +30,7 @@ public class UserDto {
     private UserType userType;
 
     @Enumerated(EnumType.STRING)
-    private String country;
+    private Country country;
 
 
 }
