@@ -7,7 +7,7 @@ import org.mapstruct.Mapping;
 
 @Mapper(componentModel = "spring")
 public interface EventMapper {
-    @Mapping(target = "hostId", source = "host.id")
+//    @Mapping(target = "hostId", source = "host.id")
     EventDto toDto(EventEntity eventEntity);
     EventEntity toEntity(EventDto dto);
 }
