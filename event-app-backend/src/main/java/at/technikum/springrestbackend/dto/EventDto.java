@@ -14,6 +14,7 @@ import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -49,7 +50,8 @@ public class EventDto {
     @NotNull
     private LocalDateTime salesEnd;
 
-    private Long hostId; // UserId des Hosts
+    @NotNull
+    private UUID hostId; // UserId des Hosts
 
     @CreatedDate
     private LocalDateTime createdDate;
