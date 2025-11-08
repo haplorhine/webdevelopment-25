@@ -25,6 +25,9 @@ public class UserEntity {
 
     private Salutation salutation;
 
+    @Enumerated(EnumType.STRING)
+    private Country country;
+
     private String username;
 
     private String email;
