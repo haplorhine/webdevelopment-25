@@ -1,22 +1,24 @@
 package at.technikum.springrestbackend.services;
-
 import at.technikum.springrestbackend.dto.EventDto;
+import at.technikum.springrestbackend.entity.EventEntity;
+import at.technikum.springrestbackend.entity.UserEntity;
 import at.technikum.springrestbackend.mapper.EventMapper;
 import at.technikum.springrestbackend.repositories.EventRepository;
-import jakarta.validation.Valid;
+import at.technikum.springrestbackend.repositories.UserRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class EventService {
 
     private final EventRepository eventRepository;
+    private final UserRepository userRepository;
     private final EventMapper eventMapper;
 
-    public EventService(EventRepository eventRepository, EventMapper eventMapper) {
+    public EventService(EventRepository eventRepository, UserRepository userRepository, EventMapper eventMapper) {
         this.eventRepository = eventRepository;
+        this.userRepository = userRepository;
         this.eventMapper = eventMapper;
     }
 
@@ -25,6 +27,10 @@ public class EventService {
     }
 
     public EventDto createEvent(EventDto eventDto) {
-        return eventMapper.toDto(eventRepository.save(eventMapper.toEntity(eventDto)));
+        UserEntity host = userRepository.findById(eventDto.getHostId()).orElse(null);
+        EventEntity eventEntity = eventMapper.toEntity(eventDto);
+        eventEntity.setHost(host);
+        EventEntity savedEntity = eventRepository.save(eventEntity);
+        return eventMapper.toDto(savedEntity);
     }
 }
