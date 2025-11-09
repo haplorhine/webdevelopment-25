@@ -49,7 +49,6 @@ public class EventEntity {
     @JoinColumn(name = "host_id", nullable = false)
     private UserEntity host;
 
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "event_id")
+    @OneToMany(mappedBy = "event", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<TicketEntity> tickets;
 }
