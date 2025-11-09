@@ -42,9 +42,6 @@ public class EventEntity {
     @LastModifiedDate
     private LocalDateTime lastModifiedDate;
 
-    @CreatedBy
-    private String createdBy;
-
     @ManyToOne
     @JoinColumn(name = "host_id", nullable = false)
     private UserEntity host;
