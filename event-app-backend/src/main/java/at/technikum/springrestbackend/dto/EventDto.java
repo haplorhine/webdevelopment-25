@@ -50,9 +50,7 @@ public class EventDto {
     @NotNull
     private UUID hostId; // UserId des Hosts
 
-    @CreatedDate
     private LocalDateTime createdDate;
 
-    @LastModifiedDate
     private LocalDateTime lastModifiedDate;
 }
