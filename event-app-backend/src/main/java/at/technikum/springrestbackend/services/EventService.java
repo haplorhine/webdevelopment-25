@@ -5,9 +5,12 @@ import at.technikum.springrestbackend.entity.UserEntity;
 import at.technikum.springrestbackend.mapper.EventMapper;
 import at.technikum.springrestbackend.repositories.EventRepository;
 import at.technikum.springrestbackend.repositories.UserRepository;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -37,5 +40,17 @@ public class EventService {
 
     public void deleteEventById(UUID id) {
         eventRepository.deleteById(id);
+    }
+
+    public EventDto updateEvent(UUID id, EventDto eventDto) {
+        EventEntity savedEvent = eventRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+
+        eventMapper.updateEntityFromDto(eventDto, savedEvent);
+        UserEntity savedUser = userRepository.findById(eventDto.getHostId())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+        savedEvent.setHost(savedUser);
+        eventRepository.save(savedEvent);
+        return eventMapper.toDto(savedEvent);
     }
 }

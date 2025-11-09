@@ -10,4 +10,8 @@ public interface EventMapper {
     @Mapping(target = "hostId", source = "host.id")
     EventDto toDto(EventEntity eventEntity);
     EventEntity toEntity(EventDto dto);
+
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "createdDate", ignore = true)
+    void updateEntityFromDto(EventDto dto, @org.mapstruct.MappingTarget EventEntity entity);
 }
