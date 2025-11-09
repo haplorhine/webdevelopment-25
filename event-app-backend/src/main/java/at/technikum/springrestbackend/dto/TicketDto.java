@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @NoArgsConstructor
 @Getter
@@ -14,9 +15,9 @@ import java.time.LocalDateTime;
 
 public class TicketDto {
 
-    private Long eventId;
+    private UUID eventId;
 
-    private Long userId;
+    private UUID userId;
 
     @NotNull
     private LocalDateTime purchaseDate;
@@ -24,5 +25,4 @@ public class TicketDto {
     private Double price;
 
     private TicketStatus status; // ENUM: ACTIVE, CANCELLED
-
 }
