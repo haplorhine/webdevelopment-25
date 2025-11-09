@@ -7,6 +7,7 @@ import at.technikum.springrestbackend.repositories.UserRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.UUID;
 
 @Service
 public class UserService {
@@ -27,5 +28,8 @@ public class UserService {
         UserEntity savedUser = userRepository.save(userEntity);
         return userMapper.toDto(savedUser);
     }
-}
 
+    public void deleteUserById(UUID id) {
+        userRepository.deleteById(id);
+    }
+}
