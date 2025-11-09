@@ -23,6 +23,7 @@ public class UserEntity {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
+    @Enumerated(EnumType.STRING)
     private Salutation salutation;
 
     @Enumerated(EnumType.STRING)
@@ -32,6 +33,7 @@ public class UserEntity {
 
     private String email;
 
+    @Enumerated(EnumType.STRING)
     private UserType userType;
 
     @CreatedDate

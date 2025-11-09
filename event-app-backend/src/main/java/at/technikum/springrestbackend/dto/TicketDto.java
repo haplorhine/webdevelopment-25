@@ -1,8 +1,6 @@
 package at.technikum.springrestbackend.dto;
 
 import at.technikum.springrestbackend.entity.TicketStatus;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -25,7 +23,6 @@ public class TicketDto {
 
     private Double price;
 
-    @Enumerated(EnumType.STRING)
     private TicketStatus status; // ENUM: ACTIVE, CANCELLED
 
 }

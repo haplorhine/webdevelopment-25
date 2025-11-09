@@ -25,6 +25,7 @@ public class EventEntity {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
     private String title;
+    @Enumerated(EnumType.STRING)
     private Category category;
     private String imageURL;
     private String description;
