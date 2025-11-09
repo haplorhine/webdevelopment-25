@@ -3,12 +3,11 @@ package at.technikum.springrestbackend.controllers;
 import at.technikum.springrestbackend.dto.EventDto;
 import at.technikum.springrestbackend.services.EventService;
 import jakarta.validation.Valid;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 public class EventController {
@@ -23,9 +22,14 @@ public class EventController {
         return eventService.getEvents();
     }
 
-   @PostMapping("/events")
+    @PostMapping("/events")
     public EventDto createEvent(@RequestBody @Valid EventDto eventDto) {
         return eventService.createEvent(eventDto);
     }
 
+    @DeleteMapping("/events/{id}")
+    public ResponseEntity<Void> deleteEvent(@PathVariable UUID id) {
+        eventService.deleteEventById(id);
+        return ResponseEntity.noContent().build();
+    }
 }

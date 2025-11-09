@@ -8,6 +8,7 @@ import at.technikum.springrestbackend.repositories.UserRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.UUID;
 
 @Service
 public class EventService {
@@ -32,5 +33,9 @@ public class EventService {
         eventEntity.setHost(host);
         EventEntity savedEntity = eventRepository.save(eventEntity);
         return eventMapper.toDto(savedEntity);
+    }
+
+    public void deleteEventById(UUID id) {
+        eventRepository.deleteById(id);
     }
 }
