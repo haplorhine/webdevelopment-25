@@ -25,6 +25,7 @@ public class EventEntity {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
     private String title;
+    @Enumerated(EnumType.STRING)
     private Category category;
     private String imageURL;
     private String description;
@@ -41,14 +42,10 @@ public class EventEntity {
     @LastModifiedDate
     private LocalDateTime lastModifiedDate;
 
-    @CreatedBy
-    private String createdBy;
-
     @ManyToOne
     @JoinColumn(name = "host_id", nullable = false)
     private UserEntity host;
 
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "event_id")
+    @OneToMany(mappedBy = "event", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<TicketEntity> tickets;
 }

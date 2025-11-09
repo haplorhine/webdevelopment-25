@@ -23,12 +23,17 @@ public class UserEntity {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
+    @Enumerated(EnumType.STRING)
     private Salutation salutation;
+
+    @Enumerated(EnumType.STRING)
+    private Country country;
 
     private String username;
 
     private String email;
 
+    @Enumerated(EnumType.STRING)
     private UserType userType;
 
     @CreatedDate

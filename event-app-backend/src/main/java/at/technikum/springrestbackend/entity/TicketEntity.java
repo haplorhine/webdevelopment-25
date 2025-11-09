@@ -33,6 +33,7 @@ public class TicketEntity {
 
     private Double price;
 
+    @Enumerated(EnumType.STRING)
     private TicketStatus status; // ENUM: ACTIVE, CANCELLED
 
     @CreatedDate

@@ -1,9 +1,8 @@
 package at.technikum.springrestbackend.dto;
 
+import at.technikum.springrestbackend.entity.Country;
 import at.technikum.springrestbackend.entity.Salutation;
 import at.technikum.springrestbackend.entity.UserType;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
@@ -16,7 +15,6 @@ import lombok.NoArgsConstructor;
 
 public class UserDto {
 
-    @Enumerated(EnumType.STRING)
     private Salutation salutation;
 
     @Email
@@ -25,11 +23,9 @@ public class UserDto {
     @Size(min = 5)
     private String username;
 
-    @Enumerated(EnumType.STRING)
     private UserType userType;
 
-    @Enumerated(EnumType.STRING)
-    private String country;
+    private Country country;
 
 
 }
