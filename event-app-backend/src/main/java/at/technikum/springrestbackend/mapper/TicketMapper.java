@@ -16,4 +16,8 @@ public interface TicketMapper {
     @Mapping(source = "eventId", target = "event.id")
     @Mapping(source = "userId", target = "user.id")
     TicketEntity toEntity(TicketDto dto);
+
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "createdDate", ignore = true)
+    void updateEntityFromDto(TicketDto dto, @org.mapstruct.MappingTarget TicketEntity entity);
 }
