@@ -53,4 +53,12 @@ public class EventService {
         eventRepository.save(savedEvent);
         return eventMapper.toDto(savedEvent);
     }
+
+    public EventDto getEventById(UUID id) {
+        Optional<EventEntity> eventOpt = eventRepository.findById(id);
+        if (eventOpt.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+        }
+        return eventMapper.toDto(eventOpt.get());
+    }
 }

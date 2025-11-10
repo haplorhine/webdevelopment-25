@@ -37,4 +37,9 @@ public class EventController {
     public EventDto updateEvent(@PathVariable UUID id, @RequestBody @Valid EventDto eventDto) {
         return eventService.updateEvent(id, eventDto);
     }
+
+    @GetMapping("/events/{id}")
+    public EventDto getEventById(@PathVariable UUID id) {
+        return eventService.getEventById(id);
+    }
 }
