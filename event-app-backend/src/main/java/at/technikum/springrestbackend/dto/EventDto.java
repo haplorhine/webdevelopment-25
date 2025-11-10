@@ -47,6 +47,8 @@ public class EventDto {
     @NotNull
     private LocalDateTime salesEnd;
 
+    private Double ticketPrice;
+
     @NotNull
     private UUID hostId; // UserId des Hosts
 

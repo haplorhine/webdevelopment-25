@@ -32,4 +32,14 @@ public class UserController {
         userService.deleteUserById(id);
         return ResponseEntity.noContent().build();
     }
+
+    @GetMapping("/users/{id}")
+    public UserDto getUserById(@PathVariable java.util.UUID id) {
+        return userService.getUserById(id);
+    }
+
+    @PutMapping("/users/{id}")
+    public UserDto updateUser(@PathVariable UUID id, @RequestBody @Valid UserDto userDto) {
+        return userService.updateUser(id, userDto);
+    }
 }

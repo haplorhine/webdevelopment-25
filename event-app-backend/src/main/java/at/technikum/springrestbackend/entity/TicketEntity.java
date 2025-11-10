@@ -31,8 +31,6 @@ public class TicketEntity {
     @JoinColumn(name = "user_id")
     private UserEntity user;
 
-    private Double price;
-
     @Enumerated(EnumType.STRING)
     private TicketStatus status; // ENUM: ACTIVE, CANCELLED
 

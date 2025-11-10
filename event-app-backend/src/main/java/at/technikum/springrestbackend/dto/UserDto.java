@@ -9,11 +9,15 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.NoArgsConstructor;
 
+import java.util.UUID;
+
 @NoArgsConstructor
 @Getter
 @Setter
 
 public class UserDto {
+
+    private UUID id;
 
     private Salutation salutation;
 

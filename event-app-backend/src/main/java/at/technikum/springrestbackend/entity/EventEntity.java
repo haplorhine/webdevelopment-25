@@ -35,6 +35,7 @@ public class EventEntity {
     private Integer maxParticipants;
     private LocalDateTime salesStart;
     private LocalDateTime salesEnd;
+    private Double ticketPrice;
 
     @CreatedDate
     private LocalDateTime createdDate;

@@ -8,4 +8,8 @@ import org.mapstruct.Mapper;
 public interface UserMapper {
     UserDto toDto(UserEntity userEntity);
     UserEntity toEntity(UserDto dto);
+
+    @org.mapstruct.Mapping(target = "id", ignore = true)
+    @org.mapstruct.Mapping(target = "createdDate", ignore = true)
+    void updateEntityFromDto(UserDto dto, @org.mapstruct.MappingTarget UserEntity entity);
 }

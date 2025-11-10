@@ -15,14 +15,14 @@ import java.util.UUID;
 
 public class TicketDto {
 
+    private UUID id;
+
     private UUID eventId;
 
     private UUID userId;
 
     @NotNull
     private LocalDateTime purchaseDate;
-
-    private Double price;
 
     private TicketStatus status; // ENUM: ACTIVE, CANCELLED
 }
