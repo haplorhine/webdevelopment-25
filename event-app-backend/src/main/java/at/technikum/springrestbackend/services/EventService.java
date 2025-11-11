@@ -31,7 +31,8 @@ public class EventService {
     }
 
     public EventDto createEvent(EventDto eventDto) {
-        UserEntity host = userRepository.findById(eventDto.getHostId()).orElse(null);
+        UserEntity host = userRepository.findById(eventDto.getHostId())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
         EventEntity eventEntity = eventMapper.toEntity(eventDto);
         eventEntity.setHost(host);
         EventEntity savedEntity = eventRepository.save(eventEntity);
