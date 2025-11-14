@@ -217,7 +217,7 @@ async function handleSubmit() {
 
           <!-- Short explanation -->
           <p class="text-sm text-base-content/70">
-            Fill all fields. Validation happens in the frontend using Yup.
+            Fill all fields.
           </p>
 
 
@@ -427,7 +427,7 @@ async function handleSubmit() {
 
           <!-- SUCCESS MESSAGE -->
           <p v-if="submitSuccess" class="text-success text-sm">
-            Form is valid. Ready to send to API!
+            Form is valid.
           </p>
 
 
@@ -445,7 +445,6 @@ async function handleSubmit() {
         <h1 class="text-5xl font-bold">Register</h1>
         <p class="py-6">
           Enter your data to create your account.
-          The form validates everything with Yup before sending to the API.
         </p>
       </div>
 
