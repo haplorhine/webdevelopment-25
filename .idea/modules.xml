@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/event-app-backend/spring-rest-backend.iml" filepath="$PROJECT_DIR$/event-app-backend/spring-rest-backend.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/webdevelopment-25.iml" filepath="$PROJECT_DIR$/.idea/webdevelopment-25.iml" />
+    </modules>
+  </component>
+</project>
