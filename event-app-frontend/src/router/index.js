@@ -6,13 +6,13 @@ import HomeView from '@/pages/HomeView.vue'
 const AboutView = () => import('@/pages/AboutView.vue')
 const LoginView = () => import('@/pages/LoginView.vue')
 const RegisterView = () => import('@/pages/RegisterView.vue')
-//const ImprintView = () => import('@/pages/ImprintView.vue')
+const ImprintView = () => import('@/pages/ImprintView.vue')
 const HelpView = () => import('@/pages/HelpView.vue')
 
 const routes = [
   { path: '/', component: HomeView },
   { path: '/about', component: AboutView },
-  //{ path: '/imprint', component: ImprintView},
+  { path: '/imprint', component: ImprintView},
   { path: '/help', component: HelpView},
   { path: '/login', component: LoginView },
   { path: '/register', component: RegisterView },
