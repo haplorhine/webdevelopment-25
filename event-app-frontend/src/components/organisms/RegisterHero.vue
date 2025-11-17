@@ -210,14 +210,14 @@ async function handleSubmit() {
       <div class="card bg-base-100 w-full max-w-md shadow-2xl">
 
         <!-- Form wrapper; @submit.prevent stops page reload -->
-        <form class="card-body space-y-4" @submit.prevent="handleSubmit">
+        <form class="card-body space-y-1" @submit.prevent="handleSubmit">
 
           <!-- Form title -->
           <h2 class="card-title">Create your account</h2>
 
           <!-- Short explanation -->
           <p class="text-sm text-base-content/70">
-            Fill all fields. Validation happens in the frontend using Yup.
+            All fields are required. Let us get to know you!
           </p>
 
 
@@ -427,7 +427,7 @@ async function handleSubmit() {
 
           <!-- SUCCESS MESSAGE -->
           <p v-if="submitSuccess" class="text-success text-sm">
-            Form is valid. Ready to send to API!
+            Your account will be created shortly!
           </p>
 
 
