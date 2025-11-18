@@ -10,7 +10,7 @@ const props = defineProps({
 </script>
 
 <template>
-  <dialog v-if="props.show" class="modal" open>
+  <dialog class="modal" :open="props.show">
     <div class="modal-box">
       <slot />
       <div class="modal-action">
