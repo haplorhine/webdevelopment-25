@@ -1,4 +1,6 @@
 <script setup>
+import AtomButton from '../atoms/AtomButton.vue'
+
 const props = defineProps({
   show: {
     type: Boolean,
@@ -13,7 +15,7 @@ const props = defineProps({
       <slot />
       <div class="modal-action">
         <form method="dialog">
-          <button class="btn">close</button>
+          <AtomButton label="close" />
         </form>
       </div>
     </div>
