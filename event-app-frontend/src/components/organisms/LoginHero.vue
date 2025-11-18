@@ -10,8 +10,7 @@ import MoleculeFieldset from '../molecules/MoleculeFieldset.vue'
       <div class="text-center lg:text-left">
         <h1 class="text-5xl font-bold">Login now!</h1>
         <p class="py-6">
-          Provident cupiditate voluptatem et in. Quaerat fugiat ut assumenda excepturi
-          exercitationem quasi. In deleniti eaque aut repudiandae et a id nisi.
+          If you are not registered yet, please check out the <AtomLink href="http://localhost:5173/register"> register page</AtomLink> !
         </p>
       </div>
 
