@@ -1,6 +1,6 @@
 <script setup>
-// base styled input
+const model = defineModel()
 </script>
 <template>
-  <input class="input" />
+  <input class="input" v-model="model" />
 </template>
