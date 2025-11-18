@@ -1,0 +1,7 @@
+IDEs:
+IntelliJ IDEA Ultimate
+VSCode
+
+Style:
+CSS, TailwindCSS, DaisyUI
+
