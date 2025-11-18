@@ -3,15 +3,15 @@ console.log('hello about')
 </script>
 
 <template>
-  <!-- Full background section -->
+
   <section
     class="relative min-h-screen flex items-center bg-cover bg-center bg-no-repeat"
     style="background-image: url('/images/about-bg.jpg')"
   >
-    <!-- Overlay for readability -->
+
     <div class="absolute inset-0 bg-black/40"></div>
 
-    <!-- CONTENT -->
+
     <div class="relative z-10 max-w-3xl mx-auto px-6 text-white space-y-6">
 
       <h1 class="text-5xl md:text-6xl font-extrabold drop-shadow-lg">
@@ -36,6 +36,6 @@ console.log('hello about')
 </template>
 
 <style scoped>
-/* No extra CSS needed thanks to Tailwind */
+
 </style>
 
