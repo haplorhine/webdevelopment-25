@@ -44,6 +44,14 @@ public class UserService {
         return userMapper.toDto(userOpt.get());
     }
 
+    public UserEntity findUserByUsername(String username) {
+        Optional<UserEntity> userOpt = userRepository.findByUsername(username);
+        if (userOpt.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+        }
+        return userOpt.get();
+    }
+
     public UserDto updateUser(UUID id, UserDto userDto) {
         UserEntity savedUser = userRepository.findById(id)
             .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));

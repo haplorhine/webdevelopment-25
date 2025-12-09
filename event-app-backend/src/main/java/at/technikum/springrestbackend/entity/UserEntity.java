@@ -42,4 +42,6 @@ public class UserEntity {
     @LastModifiedDate
     private LocalDateTime lastModifiedDate;
 
+    private String password;
+
 }
