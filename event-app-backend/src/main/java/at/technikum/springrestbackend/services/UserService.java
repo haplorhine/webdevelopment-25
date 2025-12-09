@@ -5,6 +5,7 @@ import at.technikum.springrestbackend.entity.UserEntity;
 import at.technikum.springrestbackend.mapper.UserMapper;
 import at.technikum.springrestbackend.repositories.UserRepository;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -16,10 +17,12 @@ import java.util.UUID;
 public class UserService {
     private final UserRepository userRepository;
     private final UserMapper userMapper;
+    private final PasswordEncoder passwordEncoder;
 
-    public UserService(UserRepository userRepository, UserMapper userMapper) {
+    public UserService(UserRepository userRepository, UserMapper userMapper,  PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
         this.userMapper = userMapper;
+        this.passwordEncoder = passwordEncoder;
     }
 
     public List<UserDto> getUsers() {
@@ -27,6 +30,7 @@ public class UserService {
     }
 
     public UserDto createUser(UserDto userDto) {
+        userDto.setPassword(passwordEncoder.encode(userDto.getPassword()));
         UserEntity userEntity = userMapper.toEntity(userDto);
         UserEntity savedUser = userRepository.save(userEntity);
         return userMapper.toDto(savedUser);
