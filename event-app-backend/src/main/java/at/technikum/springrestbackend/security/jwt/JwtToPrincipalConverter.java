@@ -13,7 +13,7 @@ public class JwtToPrincipalConverter {
     public UserPrincipal convert(DecodedJWT decodedJWT) {
 
         return new UserPrincipal(UUID.fromString(decodedJWT.getSubject()),
-                decodedJWT.getClaim("email").asString(),
+                decodedJWT.getClaim("username").asString(),
                 "",
                 decodedJWT.getClaim("role").asString()
         );

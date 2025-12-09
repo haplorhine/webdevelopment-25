@@ -17,11 +17,11 @@ public class JwtIssuer implements TokenIssuer{
     private final JwtProperties properties;
 
     @Override
-    public String issue(UUID userId, String email, String role) {
+    public String issue(UUID userId, String username, String role) {
         return JWT.create()
                 .withSubject(String.valueOf(userId))
                 .withExpiresAt(Instant.now().plus(Duration.of(1, ChronoUnit.DAYS)))
-                .withClaim("email", email)
+                .withClaim("username", username)
                 .withClaim("role", role)
                 .sign(Algorithm.HMAC256(properties.getSecret()));
     }
