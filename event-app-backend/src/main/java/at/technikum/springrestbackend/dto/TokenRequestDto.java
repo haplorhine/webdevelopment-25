@@ -9,9 +9,6 @@ import lombok.Setter;
 public class TokenRequestDto {
 
     @NotBlank
-    private String email;
-
-    @NotBlank
     private String username;
 
     @NotBlank
