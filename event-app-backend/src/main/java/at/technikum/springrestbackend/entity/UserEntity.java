@@ -42,6 +42,7 @@ public class UserEntity {
     @LastModifiedDate
     private LocalDateTime lastModifiedDate;
 
+    @Column(nullable = false)
     private String password;
 
 }
