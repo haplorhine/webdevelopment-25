@@ -24,17 +24,34 @@ public class EventEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
+
+    @Column(nullable = false)
     private String title;
+
     @Enumerated(EnumType.STRING)
     private Category category;
+
     private String imageURL;
     private String description;
+
+    @Column(nullable = false)
     private String location;
+
+    @Column(nullable = false)
     private LocalDateTime startDate;
+
+    @Column(nullable = false)
     private LocalDateTime endDate;
+
     private Integer maxParticipants;
+
+    @Column(nullable = false)
     private LocalDateTime salesStart;
+
+    @Column(nullable = false)
     private LocalDateTime salesEnd;
+
+    @Column(nullable = false)
     private Double ticketPrice;
 
     @CreatedDate
@@ -43,6 +60,7 @@ public class EventEntity {
     @LastModifiedDate
     private LocalDateTime lastModifiedDate;
 
+    @CreatedBy
     @ManyToOne
     @JoinColumn(name = "host_id", nullable = false)
     private UserEntity host;
