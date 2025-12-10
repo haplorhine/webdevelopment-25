@@ -30,14 +30,14 @@ public class EventController {
     }
 
     @DeleteMapping("/events/{id}")
-    @PreAuthorize("hasAnyAuthority('HOST', 'ADMIN')")
+    @PreAuthorize("hasAuthority('ADMIN') or hasPermission(#id, T(at.technikum.springrestbackend.entity.EventEntity).getName(), 'delete')")
     public ResponseEntity<Void> deleteEvent(@PathVariable UUID id) {
         eventService.deleteEventById(id);
         return ResponseEntity.noContent().build();
     }
 
     @PutMapping("/events/{id}")
-    @PreAuthorize("hasAnyAuthority('HOST', 'ADMIN')")
+    @PreAuthorize("hasAuthority('ADMIN') or hasPermission(#id, T(at.technikum.springrestbackend.entity.EventEntity).getName(), 'write')")
     public EventDto updateEvent(@PathVariable UUID id, @RequestBody @Valid EventDto eventDto) {
         return eventService.updateEvent(id, eventDto);
     }
