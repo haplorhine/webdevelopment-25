@@ -2,6 +2,7 @@ package at.technikum.springrestbackend.services;
 
 import at.technikum.springrestbackend.dto.UserDto;
 import at.technikum.springrestbackend.entity.UserEntity;
+import at.technikum.springrestbackend.entity.UserType;
 import at.technikum.springrestbackend.mapper.UserMapper;
 import at.technikum.springrestbackend.repositories.UserRepository;
 import org.springframework.http.HttpStatus;
@@ -30,6 +31,10 @@ public class UserService {
     }
 
     public UserDto createUser(UserDto userDto) {
+
+        if (UserType.ADMIN.equals(userDto.getUserType())) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Registration as ADMIN is not allowed.");
+        }
         userDto.setPassword(passwordEncoder.encode(userDto.getPassword()));
         UserEntity userEntity = userMapper.toEntity(userDto);
         UserEntity savedUser = userRepository.save(userEntity);
