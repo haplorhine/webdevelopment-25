@@ -1,0 +1,214 @@
+POST http://localhost:8080/users
+Content-Type: application/json
+Content-Length: 133
+User-Agent: IntelliJ HTTP Client/IntelliJ IDEA 2024.3.4
+Accept-Encoding: br, deflate, gzip, x-gzip
+Accept: */*
+
+{
+  "salutation": "MALE",
+  "email": "markus.tuma@acv.at",
+  "username": "marking123",
+  "userType": "USER",
+  "country": "AUSTRIA"
+}
+
+<> 2025-11-09T211659.500.json
+
+###
+
+POST http://localhost:8080/events
+Content-Type: application/json
+Content-Length: 305
+User-Agent: IntelliJ HTTP Client/IntelliJ IDEA 2024.3.4
+Accept-Encoding: br, deflate, gzip, x-gzip
+Accept: */*
+
+{
+  "title": "Test Event",
+  "category": "COMMUNITY",
+  "location": "Vienna",
+  "startDate": "2025-12-01T09:00:00",
+  "endDate": "2025-12-01T17:00:00",
+  "maxParticipants": 50,
+  "salesStart": "2025-11-15T00:00:00",
+  "salesEnd": "2025-11-30T23:59:59",
+  "hostId": "7f5499dd-bcd1-11f0-a597-a6c8bf2839fd"
+}
+
+<> 2025-11-09T210720-1.500.json
+
+###
+
+POST http://localhost:8080/events
+Content-Type: application/json
+Content-Length: 403
+User-Agent: IntelliJ HTTP Client/IntelliJ IDEA 2024.3.4
+Accept-Encoding: br, deflate, gzip, x-gzip
+Accept: */*
+
+{
+  "title": "Konferenz 2025",
+  "category": "COMMUNITY",
+  "imageURL": "https://example.com/image.jpg",
+  "description": "Eine spannende Konferenz.",
+  "location": "Berlin",
+  "startDate": "2025-12-01T09:00:00",
+  "endDate": "2025-12-01T17:00:00",
+  "maxParticipants": 100,
+  "salesStart": "2025-11-15T00:00:00",
+  "salesEnd": "2025-11-30T23:59:59",
+  "hostId": "7f5499dd-bcd1-11f0-a597-a6c8bf2839fd"
+}
+
+<> 2025-11-09T210720.500.json
+
+###
+
+POST http://localhost:8080/events
+Content-Type: application/json
+Content-Length: 305
+User-Agent: IntelliJ HTTP Client/IntelliJ IDEA 2024.3.4
+Accept-Encoding: br, deflate, gzip, x-gzip
+Accept: */*
+
+{
+  "title": "Test Event",
+  "category": "COMMUNITY",
+  "location": "Vienna",
+  "startDate": "2025-12-01T09:00:00",
+  "endDate": "2025-12-01T17:00:00",
+  "maxParticipants": 50,
+  "salesStart": "2025-11-15T00:00:00",
+  "salesEnd": "2025-11-30T23:59:59",
+  "hostId": "7f5499dd-bcd1-11f0-a597-a6c8bf2839fd"
+}
+
+<> 2025-11-09T210518.500.json
+
+###
+
+POST http://localhost:8080/events
+Content-Type: application/json
+Content-Length: 403
+User-Agent: IntelliJ HTTP Client/IntelliJ IDEA 2024.3.4
+Accept-Encoding: br, deflate, gzip, x-gzip
+Accept: */*
+
+{
+  "title": "Konferenz 2025",
+  "category": "COMMUNITY",
+  "imageURL": "https://example.com/image.jpg",
+  "description": "Eine spannende Konferenz.",
+  "location": "Berlin",
+  "startDate": "2025-12-01T09:00:00",
+  "endDate": "2025-12-01T17:00:00",
+  "maxParticipants": 100,
+  "salesStart": "2025-11-15T00:00:00",
+  "salesEnd": "2025-11-30T23:59:59",
+  "hostId": "7f5499dd-bcd1-11f0-a597-a6c8bf2839fd"
+}
+
+<> 2025-11-09T210511.500.json
+
+###
+
+GET http://localhost:8080/users
+User-Agent: IntelliJ HTTP Client/IntelliJ IDEA 2024.3.4
+Accept-Encoding: br, deflate, gzip, x-gzip
+Accept: */*
+
+<> 2025-11-09T210418.200.json
+
+###
+
+POST http://localhost:8080/users
+Content-Type: application/json
+Content-Length: 133
+User-Agent: IntelliJ HTTP Client/IntelliJ IDEA 2024.3.4
+Accept-Encoding: br, deflate, gzip, x-gzip
+Accept: */*
+
+{
+  "salutation": "MALE",
+  "email": "markus.tuma@acv.at",
+  "username": "marking123",
+  "userType": "USER",
+  "country": "AUSTRIA"
+}
+
+<> 2025-11-09T210404.500.json
+
+###
+
+GET http://localhost:8080/events
+User-Agent: IntelliJ HTTP Client/IntelliJ IDEA 2024.3.4
+Accept-Encoding: br, deflate, gzip, x-gzip
+Accept: */*
+
+<> 2025-11-09T205146.200.json
+
+###
+
+POST http://localhost:8080/events
+Content-Type: application/json
+Content-Length: 437
+User-Agent: IntelliJ HTTP Client/IntelliJ IDEA 2024.3.4
+Accept-Encoding: br, deflate, gzip, x-gzip
+Accept: */*
+
+{
+  "title": "Weihnachtskonzert",
+  "category": "MUSIC",
+  "imageURL": "https://example.com/concert.jpg",
+  "description": "Ein festliches Konzert mit Chor und Orchester.",
+  "location": "Wiener Stephansdom",
+  "startDate": "2025-12-20T19:00:00",
+  "endDate": "2025-12-20T21:30:00",
+  "maxParticipants": 200,
+  "salesStart": "2025-11-01T00:00:00",
+  "salesEnd": "2025-12-19T23:59:59",
+  "hostId": "3a6b8d02-f1de-4c8e-8c47-123456789abc"
+}
+
+<> 2025-11-09T205142.400.json
+
+###
+
+GET http://localhost:8080/energy/historical?start=wiIcDPMq&end=hjQckjlr
+User-Agent: IntelliJ HTTP Client/IntelliJ IDEA 2024.3.4
+Accept-Encoding: br, deflate, gzip, x-gzip
+Accept: */*
+
+<> 2025-11-09T205036.404.json
+
+###
+
+GET http://localhost:8080/events
+User-Agent: IntelliJ HTTP Client/IntelliJ IDEA 2024.3.4
+Accept-Encoding: br, deflate, gzip, x-gzip
+Accept: */*
+
+<> 2025-11-09T205034.200.json
+
+###
+
+POST http://localhost:8080/events
+User-Agent: IntelliJ HTTP Client/IntelliJ IDEA 2024.3.4
+Accept-Encoding: br, deflate, gzip, x-gzip
+Accept: */*
+content-length: 0
+
+<> 2025-11-09T204604.400.json
+
+###
+
+GET http://localhost:8080/events
+User-Agent: IntelliJ HTTP Client/IntelliJ IDEA 2024.3.4
+Accept-Encoding: br, deflate, gzip, x-gzip
+Accept: */*
+
+<> 2025-11-09T204553.200.json
+
+###
+
