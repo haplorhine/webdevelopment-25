@@ -4,6 +4,7 @@ import at.technikum.springrestbackend.dto.EventDto;
 import at.technikum.springrestbackend.services.EventService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -23,17 +24,20 @@ public class EventController {
     }
 
     @PostMapping("/events")
+    @PreAuthorize("hasAuthority('HOST')")
     public EventDto createEvent(@RequestBody @Valid EventDto eventDto) {
         return eventService.createEvent(eventDto);
     }
 
     @DeleteMapping("/events/{id}")
+    @PreAuthorize("hasAnyAuthority('HOST', 'ADMIN')")
     public ResponseEntity<Void> deleteEvent(@PathVariable UUID id) {
         eventService.deleteEventById(id);
         return ResponseEntity.noContent().build();
     }
 
     @PutMapping("/events/{id}")
+    @PreAuthorize("hasAnyAuthority('HOST', 'ADMIN')")
     public EventDto updateEvent(@PathVariable UUID id, @RequestBody @Valid EventDto eventDto) {
         return eventService.updateEvent(id, eventDto);
     }
