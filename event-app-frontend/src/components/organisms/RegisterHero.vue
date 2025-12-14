@@ -1,6 +1,7 @@
 <script setup>
 import { reactive, ref } from 'vue'
 import * as yup from 'yup'
+import axios from 'axios' // ADDED: use relative URL (/users) through Vite proxy
 
 defineOptions({
   name: 'RegisterHero',
@@ -62,18 +63,43 @@ async function handleSubmit() {
 
   try {
     const validData = await schema.validate(form, { abortEarly: false })
+
+    const payload = {
+      salutation: validData.salutation.toUpperCase(),
+      email: validData.email,
+      username: validData.username,
+      password: validData.password,
+      userType: 'USER',
+      country: validData.country.toUpperCase().replace(/ /g, '_'), // Safari-safe
+    }
+
+    // IMPORTANT: this hits Vite proxy (same-origin), no CORS
+    const response = await axios.post('/users', payload)
+
     submitSuccess.value = true
-    console.log('Valid registration data:', validData)
+    console.log('Backend response:', response.data)
   } catch (err) {
-    if (Array.isArray(err.inner)) {
+    if (Array.isArray(err?.inner)) {
       err.inner.forEach((e) => {
         if (!errors[e.path]) errors[e.path] = e.message
       })
-    } else if (err.message) {
-      submitError.value = err.message
-    } else {
-      submitError.value = 'Unexpected validation error.'
+      return
     }
+
+    if (err?.response?.status === 400 && err?.response?.data) {
+      const data = err.response.data
+      if (typeof data === 'object' && !Array.isArray(data)) {
+        Object.keys(data).forEach((field) => {
+          errors[field] = data[field]
+        })
+        submitError.value = 'Please fix the highlighted fields.'
+      } else {
+        submitError.value = 'Registration failed (400).'
+      }
+      return
+    }
+
+    submitError.value = err?.message || 'Network Error'
   }
 }
 </script>
@@ -202,7 +228,7 @@ async function handleSubmit() {
           <p v-if="submitError" class="text-error text-sm">{{ submitError }}</p>
 
           <p v-if="submitSuccess" class="text-success text-sm">
-            Form is valid.
+            Registration successful.
           </p>
 
           <div class="card-actions justify-end mt-2">
