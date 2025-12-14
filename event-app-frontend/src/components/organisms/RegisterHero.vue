@@ -1,7 +1,7 @@
 <script setup>
 import { reactive, ref } from 'vue'
 import * as yup from 'yup'
-import axios from 'axios' // ADDED: use relative URL (/users) through Vite proxy
+import axios from 'axios'
 
 defineOptions({
   name: 'RegisterHero',
@@ -23,13 +23,54 @@ const submitSuccess = ref(false)
 
 const dachCountries = ['Germany', 'Austria', 'Switzerland']
 const otherCountries = [
-  'Afghanistan','Albania','Algeria','Andorra','Angola','Argentina','Armenia',
-  'Australia','Azerbaijan','Bahamas','Bahrain','Bangladesh','Belarus','Belgium',
-  'Brazil','Canada','China','Denmark','Egypt','Finland','France','Greece','India',
-  'Indonesia','Iran','Iraq','Ireland','Israel','Italy','Japan','Kenya','Mexico',
-  'Netherlands','Norway','Poland','Portugal','Russia','Saudi Arabia','Spain',
-  'Sweden','Thailand','Turkey','Ukraine','United Kingdom','United States',
-  'Vietnam','Zambia','Zimbabwe'
+  'Afghanistan',
+  'Albania',
+  'Algeria',
+  'Andorra',
+  'Angola',
+  'Argentina',
+  'Armenia',
+  'Australia',
+  'Azerbaijan',
+  'Bahamas',
+  'Bahrain',
+  'Bangladesh',
+  'Belarus',
+  'Belgium',
+  'Brazil',
+  'Canada',
+  'China',
+  'Denmark',
+  'Egypt',
+  'Finland',
+  'France',
+  'Greece',
+  'India',
+  'Indonesia',
+  'Iran',
+  'Iraq',
+  'Ireland',
+  'Israel',
+  'Italy',
+  'Japan',
+  'Kenya',
+  'Mexico',
+  'Netherlands',
+  'Norway',
+  'Poland',
+  'Portugal',
+  'Russia',
+  'Saudi Arabia',
+  'Spain',
+  'Sweden',
+  'Thailand',
+  'Turkey',
+  'Ukraine',
+  'United Kingdom',
+  'United States',
+  'Vietnam',
+  'Zambia',
+  'Zimbabwe',
 ]
 
 const schema = yup.object({
@@ -41,14 +82,10 @@ const schema = yup.object({
   }),
   email: yup.string().required().email(),
   username: yup.string().required(),
-  password: yup
-    .string()
-    .required()
-    .min(12)
-    .matches(/[a-z]/)
-    .matches(/[A-Z]/)
-    .matches(/\d/)
-    .matches(/[^A-Za-z0-9]/),
+  password: yup.string().required().min(6).matches(/[a-z]/),
+  // .matches(/[A-Z]/)
+  // .matches(/\d/)
+  // .matches(/[^A-Za-z0-9]/),
   repeatPassword: yup
     .string()
     .required()
@@ -73,8 +110,7 @@ async function handleSubmit() {
       country: validData.country.toUpperCase().replace(/ /g, '_'), // Safari-safe
     }
 
-    // IMPORTANT: this hits Vite proxy (same-origin), no CORS
-    const response = await axios.post('/users', payload)
+    const response = await axios.post('http://localhost:8080/users', payload)
 
     submitSuccess.value = true
     console.log('Backend response:', response.data)
@@ -227,9 +263,7 @@ async function handleSubmit() {
 
           <p v-if="submitError" class="text-error text-sm">{{ submitError }}</p>
 
-          <p v-if="submitSuccess" class="text-success text-sm">
-            Registration successful.
-          </p>
+          <p v-if="submitSuccess" class="text-success text-sm">Registration successful.</p>
 
           <div class="card-actions justify-end mt-2">
             <button type="submit" class="btn btn-ghost normal-case rounded-full px-6">
@@ -241,11 +275,8 @@ async function handleSubmit() {
 
       <div class="text-center lg:text-left max-w-md">
         <h1 class="text-5xl font-bold">Register</h1>
-        <p class="py-6">
-          Enter your data to create your account.
-        </p>
+        <p class="py-6">Enter your data to create your account.</p>
       </div>
     </div>
   </section>
 </template>
-
