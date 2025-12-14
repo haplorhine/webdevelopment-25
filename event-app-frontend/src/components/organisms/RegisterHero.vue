@@ -15,6 +15,7 @@ const form = reactive({
   password: '',
   repeatPassword: '',
   country: '',
+  userType: 'USER',
 })
 
 const errors = reactive({})
@@ -91,6 +92,7 @@ const schema = yup.object({
     .required()
     .oneOf([yup.ref('password')]),
   country: yup.string().required(),
+  userType: yup.string().required().oneOf(['USER', 'HOST']),
 })
 
 async function handleSubmit() {
@@ -106,7 +108,7 @@ async function handleSubmit() {
       email: validData.email,
       username: validData.username,
       password: validData.password,
-      userType: 'USER',
+      userType: validData.userType,
       country: validData.country.toUpperCase().replace(/ /g, '_'), // Safari-safe
     }
 
@@ -259,6 +261,21 @@ async function handleSubmit() {
               </optgroup>
             </select>
             <p v-if="errors.country" class="text-error text-xs mt-1">{{ errors.country }}</p>
+          </div>
+
+          <div class="form-control">
+            <label class="label" for="userType">
+              <span class="label-text font-semibold">Account Type</span>
+            </label>
+            <select
+              id="userType"
+              v-model="form.userType"
+              :class="['select select-bordered w-full', { 'select-error': errors.userType }]"
+            >
+              <option value="USER">User (Attend Events)</option>
+              <option value="HOST">Host (Create Events)</option>
+            </select>
+            <p v-if="errors.userType" class="text-error text-xs mt-1">{{ errors.userType }}</p>
           </div>
 
           <p v-if="submitError" class="text-error text-sm">{{ submitError }}</p>
