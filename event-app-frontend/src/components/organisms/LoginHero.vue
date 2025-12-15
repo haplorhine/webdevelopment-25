@@ -1,6 +1,5 @@
 <script setup>
 import { ref } from 'vue'
-import { useRouter } from 'vue-router'
 import { login } from '@/api/auth'
 import AtomButton from '../atoms/AtomButton.vue'
 import AtomLink from '../atoms/AtomLink.vue'
@@ -8,9 +7,7 @@ import LabeledInput from '../molecules/LabeledInput.vue'
 import MoleculeFieldset from '../molecules/MoleculeFieldset.vue'
 import ErrorModal from './ErrorModal.vue'
 
-const router = useRouter()
-
- const username = ref('') 
+const username = ref('') 
 const password = ref('')
 const showError = ref(false)
 const errorMessage = ref('')
@@ -22,7 +19,8 @@ const handleLogin = async () => {
     localStorage.setItem('token', response.token)
     
     showError.value = false
-    router.push('/') 
+    // Force reload to update Navbar state
+    window.location.href = '/'
     
   } catch (error) {
     console.error(error)
@@ -54,7 +52,7 @@ const handleErrorClose = () => {
               <LabeledInput
                 v-model="username"
                 type="text"
-                InputClass="w-full"
+                input-class="w-full"
                 placeholder="Username"
                 label="Username"
                 id="username-input"
@@ -64,7 +62,7 @@ const handleErrorClose = () => {
               <LabeledInput
                 v-model="password"
                 type="password"
-                InputClass="w-full"
+                input-class="w-full"
                 placeholder="password"
                 label="Password"
                 id="password-input"

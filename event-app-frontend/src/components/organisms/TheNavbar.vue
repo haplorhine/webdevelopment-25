@@ -1,12 +1,63 @@
 <script setup>
-import { RouterLink } from 'vue-router'
+import { RouterLink, useRouter } from 'vue-router'
 import LoginButton from '../molecules/LoginButton.vue'
+import { ref, computed, onMounted } from 'vue'
+import { jwtDecode } from 'jwt-decode'
 
-defineProps({
+const props = defineProps({
   links: {
     type: Array,
     default: () => [],
   },
+})
+
+const router = useRouter()
+const userRole = ref(null)
+
+const isLoggedIn = computed(() => userRole.value !== null)
+
+const displayedLinks = computed(() => {
+  // Admin logic: Only Events and User Management
+  if (userRole.value === 'ADMIN') {
+    return [
+      { to: '/events', label: 'Events' },
+      { to: '/user-management', label: 'User Management' },
+    ]
+  }
+
+  // Base links (copy to avoid mutation)
+  let currentLinks = [...props.links]
+
+  // Hide Register if logged in
+  if (isLoggedIn.value) {
+    currentLinks = currentLinks.filter((link) => link.label !== 'Register')
+  }
+
+  // Host logic: Add Create Event
+  if (userRole.value === 'HOST') {
+    currentLinks.push({ to: '/create-event', label: 'Create Event' })
+  }
+
+  return currentLinks
+})
+
+const logout = () => {
+  localStorage.removeItem('token')
+  userRole.value = null
+  router.push('/login')
+}
+
+onMounted(() => {
+  const token = localStorage.getItem('token')
+  if (token) {
+    try {
+      const decoded = jwtDecode(token)
+      userRole.value = decoded.role
+    } catch (error) {
+      console.error('Invalid token', error)
+      localStorage.removeItem('token')
+    }
+  }
 })
 </script>
 <template>
@@ -33,7 +84,7 @@ defineProps({
           tabindex="-1"
           class="menu menu-sm dropdown-content bg-base-100 rounded-box z-1 mt-3 w-52 p-2 shadow"
         >
-          <li v-for="link in links" :key="link.to">
+          <li v-for="link in displayedLinks" :key="link.to">
             <RouterLink :to="link.to">{{ link.label }}</RouterLink>
           </li>
         </ul>
@@ -42,7 +93,7 @@ defineProps({
     </div>
     <div class="navbar-center hidden lg:flex">
       <ul class="menu menu-horizontal px-1">
-        <li v-for="link in links" :key="link.to">
+        <li v-for="link in displayedLinks" :key="link.to">
           <RouterLink :to="link.to">{{ link.label }}</RouterLink>
         </li>
       </ul>
@@ -53,7 +104,7 @@ defineProps({
         placeholder="Search for events"
         class="input input-bordered w-24 md:w-auto"
       />
-      <div class="dropdown dropdown-end">
+      <div v-if="isLoggedIn" class="dropdown dropdown-end">
         <div tabindex="0" role="button" class="btn btn-ghost btn-circle avatar">
           <div class="w-10 rounded-full">
             <img
@@ -73,10 +124,10 @@ defineProps({
             </a>
           </li>
           <li><a>Settings</a></li>
-          <li><a>Logout</a></li>
+          <li><a @click="logout">Logout</a></li>
         </ul>
       </div>
-      <RouterLink to="/login"><LoginButton /></RouterLink>
+      <RouterLink v-else to="/login"><LoginButton /></RouterLink>
     </div>
   </div>
 </template>
