@@ -1,7 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
 
 import HomeView from '@/pages/HomeView.vue'
-import EventView from '@/pages/EventView.vue'
 
 // lazy load other routes
 const AboutView = () => import('@/pages/AboutView.vue')
@@ -9,13 +8,16 @@ const LoginView = () => import('@/pages/LoginView.vue')
 const RegisterView = () => import('@/pages/RegisterView.vue')
 const ImprintView = () => import('@/pages/ImprintView.vue')
 const HelpView = () => import('@/pages/HelpView.vue')
+const EventView = () => import('@/pages/EventView.vue')
+const CreateEventView = () => import('@/pages/CreateEventView.vue')
 
 const routes = [
   { path: '/', component: HomeView },
   { path: '/events', component: EventView },
+  { path: '/create-event', component: CreateEventView },
   { path: '/about', component: AboutView },
-  { path: '/imprint', component: ImprintView},
-  { path: '/help', component: HelpView},
+  { path: '/imprint', component: ImprintView },
+  { path: '/help', component: HelpView },
   { path: '/login', component: LoginView },
   { path: '/register', component: RegisterView },
 ]
