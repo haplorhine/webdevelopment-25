@@ -15,6 +15,7 @@
   },
   "dependencies": {
     "@tailwindcss/vite": "^4.1.16",
+    "axios": "^1.13.2",
     "daisyui": "^5.3.9",
     "tailwindcss": "^4.1.16",
     "vue": "^3.5.22",
@@ -32,5 +33,10 @@
     "prettier": "3.6.2",
     "vite": "^7.1.7",
     "vite-plugin-vue-devtools": "^8.0.2"
-  }
+  },
+  "description": "This template should help get you started developing with Vue 3 in Vite.",
+  "main": "eslint.config.js",
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
 }
