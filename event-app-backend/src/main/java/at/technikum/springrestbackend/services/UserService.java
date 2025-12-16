@@ -1,5 +1,6 @@
 package at.technikum.springrestbackend.services;
 
+import at.technikum.springrestbackend.dto.UserCreationDto;
 import at.technikum.springrestbackend.dto.UserDto;
 import at.technikum.springrestbackend.entity.UserEntity;
 import at.technikum.springrestbackend.entity.UserType;
@@ -30,13 +31,13 @@ public class UserService {
         return userRepository.findAll().stream().map(userMapper::toDto).toList();
     }
 
-    public UserDto createUser(UserDto userDto) {
+    public UserDto createUser(UserCreationDto userCreationDto) {
 
-        if (UserType.ADMIN.equals(userDto.getUserType())) {
+        if (UserType.ADMIN.equals(userCreationDto.getUserType())) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Registration as ADMIN is not allowed.");
         }
-        userDto.setPassword(passwordEncoder.encode(userDto.getPassword()));
-        UserEntity userEntity = userMapper.toEntity(userDto);
+        userCreationDto.setPassword(passwordEncoder.encode(userCreationDto.getPassword()));
+        UserEntity userEntity = userMapper.toEntity(userCreationDto);
         UserEntity savedUser = userRepository.save(userEntity);
         return userMapper.toDto(savedUser);
     }
@@ -61,10 +62,10 @@ public class UserService {
         return userOpt.get();
     }
 
-    public UserDto updateUser(UUID id, UserDto userDto) {
+    public UserDto updateUser(UUID id, UserCreationDto userCreationDto) {
         UserEntity savedUser = userRepository.findById(id)
             .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
-        userMapper.updateEntityFromDto(userDto, savedUser);
+        userMapper.updateEntityFromDto(userCreationDto, savedUser);
         UserEntity updatedUser = userRepository.save(savedUser);
         return userMapper.toDto(updatedUser);
     }

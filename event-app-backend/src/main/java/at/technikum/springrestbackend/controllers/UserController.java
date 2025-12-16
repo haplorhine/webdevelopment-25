@@ -1,5 +1,6 @@
 package at.technikum.springrestbackend.controllers;
 
+import at.technikum.springrestbackend.dto.UserCreationDto;
 import at.technikum.springrestbackend.dto.UserDto;
 import at.technikum.springrestbackend.services.UserService;
 import jakarta.validation.Valid;
@@ -25,8 +26,8 @@ public class UserController {
     }
 
     @PostMapping("/users")
-    public UserDto createUser(@RequestBody @Valid UserDto userDto) {
-        return userService.createUser(userDto);
+    public UserDto createUser(@RequestBody @Valid UserCreationDto userCreationDto) {
+        return userService.createUser(userCreationDto);
     }
 
     @DeleteMapping("/users/{id}")
@@ -44,7 +45,7 @@ public class UserController {
 
     @PutMapping("/users/{id}")
     @PreAuthorize("hasAuthority('ADMIN') or hasPermission(#id, T(at.technikum.springrestbackend.entity.UserEntity).getName(), 'write')")
-    public UserDto updateUser(@PathVariable UUID id, @RequestBody @Valid UserDto userDto) {
-        return userService.updateUser(id, userDto);
+    public UserDto updateUser(@PathVariable UUID id, @RequestBody @Valid UserCreationDto userCreationDto) {
+        return userService.updateUser(id, userCreationDto);
     }
 }
