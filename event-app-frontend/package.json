@@ -18,6 +18,7 @@
     "axios": "^1.13.2",
     "daisyui": "^5.3.9",
     "jwt-decode": "^4.0.0",
+    "pinia": "^3.0.4",
     "tailwindcss": "^4.1.16",
     "vue": "^3.5.22",
     "vue-router": "^4.5.1",
