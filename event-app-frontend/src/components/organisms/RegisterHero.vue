@@ -1,6 +1,8 @@
 <script setup>
 import { reactive, ref } from 'vue'
 import * as yup from 'yup'
+import axios from 'axios'
+import { useRouter } from 'vue-router'
 
 defineOptions({
   name: 'RegisterHero',
@@ -14,6 +16,7 @@ const form = reactive({
   password: '',
   repeatPassword: '',
   country: '',
+  userType: 'USER',
 })
 
 const errors = reactive({})
@@ -22,13 +25,54 @@ const submitSuccess = ref(false)
 
 const dachCountries = ['Germany', 'Austria', 'Switzerland']
 const otherCountries = [
-  'Afghanistan','Albania','Algeria','Andorra','Angola','Argentina','Armenia',
-  'Australia','Azerbaijan','Bahamas','Bahrain','Bangladesh','Belarus','Belgium',
-  'Brazil','Canada','China','Denmark','Egypt','Finland','France','Greece','India',
-  'Indonesia','Iran','Iraq','Ireland','Israel','Italy','Japan','Kenya','Mexico',
-  'Netherlands','Norway','Poland','Portugal','Russia','Saudi Arabia','Spain',
-  'Sweden','Thailand','Turkey','Ukraine','United Kingdom','United States',
-  'Vietnam','Zambia','Zimbabwe'
+  'Afghanistan',
+  'Albania',
+  'Algeria',
+  'Andorra',
+  'Angola',
+  'Argentina',
+  'Armenia',
+  'Australia',
+  'Azerbaijan',
+  'Bahamas',
+  'Bahrain',
+  'Bangladesh',
+  'Belarus',
+  'Belgium',
+  'Brazil',
+  'Canada',
+  'China',
+  'Denmark',
+  'Egypt',
+  'Finland',
+  'France',
+  'Greece',
+  'India',
+  'Indonesia',
+  'Iran',
+  'Iraq',
+  'Ireland',
+  'Israel',
+  'Italy',
+  'Japan',
+  'Kenya',
+  'Mexico',
+  'Netherlands',
+  'Norway',
+  'Poland',
+  'Portugal',
+  'Russia',
+  'Saudi Arabia',
+  'Spain',
+  'Sweden',
+  'Thailand',
+  'Turkey',
+  'Ukraine',
+  'United Kingdom',
+  'United States',
+  'Vietnam',
+  'Zambia',
+  'Zimbabwe',
 ]
 
 const schema = yup.object({
@@ -40,20 +84,17 @@ const schema = yup.object({
   }),
   email: yup.string().required().email(),
   username: yup.string().required(),
-  password: yup
-    .string()
-    .required()
-    .min(12)
-    .matches(/[a-z]/)
-    .matches(/[A-Z]/)
-    .matches(/\d/)
-    .matches(/[^A-Za-z0-9]/),
+  password: yup.string().required().min(6).matches(/[a-z]/),
+
   repeatPassword: yup
     .string()
     .required()
     .oneOf([yup.ref('password')]),
   country: yup.string().required(),
+  userType: yup.string().required().oneOf(['USER', 'HOST']),
 })
+
+const router = useRouter()
 
 async function handleSubmit() {
   submitError.value = ''
@@ -62,18 +103,46 @@ async function handleSubmit() {
 
   try {
     const validData = await schema.validate(form, { abortEarly: false })
+
+    const payload = {
+      salutation: validData.salutation.toUpperCase(),
+      email: validData.email,
+      username: validData.username,
+      password: validData.password,
+      userType: validData.userType,
+      country: validData.country.toUpperCase().replace(/ /g, '_'), // Safari-safe
+    }
+
+    const response = await axios.post('http://localhost:8080/users', payload)
+
     submitSuccess.value = true
-    console.log('Valid registration data:', validData)
+    console.log('Backend response:', response.data)
+
+
+    router.push('/login')
+
   } catch (err) {
-    if (Array.isArray(err.inner)) {
+    if (Array.isArray(err?.inner)) {
       err.inner.forEach((e) => {
         if (!errors[e.path]) errors[e.path] = e.message
       })
-    } else if (err.message) {
-      submitError.value = err.message
-    } else {
-      submitError.value = 'Unexpected validation error.'
+      return
     }
+
+    if (err?.response?.status === 400 && err?.response?.data) {
+      const data = err.response.data
+      if (typeof data === 'object' && !Array.isArray(data)) {
+        Object.keys(data).forEach((field) => {
+          errors[field] = data[field]
+        })
+        submitError.value = 'Please fix the highlighted fields.'
+      } else {
+        submitError.value = 'Registration failed (400).'
+      }
+      return
+    }
+
+    submitError.value = err?.message || 'Network Error'
   }
 }
 </script>
@@ -199,11 +268,24 @@ async function handleSubmit() {
             <p v-if="errors.country" class="text-error text-xs mt-1">{{ errors.country }}</p>
           </div>
 
+          <div class="form-control">
+            <label class="label" for="userType">
+              <span class="label-text font-semibold">Account Type</span>
+            </label>
+            <select
+              id="userType"
+              v-model="form.userType"
+              :class="['select select-bordered w-full', { 'select-error': errors.userType }]"
+            >
+              <option value="USER">User (Attend Events)</option>
+              <option value="HOST">Host (Create Events)</option>
+            </select>
+            <p v-if="errors.userType" class="text-error text-xs mt-1">{{ errors.userType }}</p>
+          </div>
+
           <p v-if="submitError" class="text-error text-sm">{{ submitError }}</p>
 
-          <p v-if="submitSuccess" class="text-success text-sm">
-            Form is valid.
-          </p>
+          <p v-if="submitSuccess" class="text-success text-sm">Registration successful.</p>
 
           <div class="card-actions justify-end mt-2">
             <button type="submit" class="btn btn-ghost normal-case rounded-full px-6">
@@ -215,11 +297,8 @@ async function handleSubmit() {
 
       <div class="text-center lg:text-left max-w-md">
         <h1 class="text-5xl font-bold">Register</h1>
-        <p class="py-6">
-          Enter your data to create your account.
-        </p>
+        <p class="py-6">Enter your data to create your account.</p>
       </div>
     </div>
   </section>
 </template>
-

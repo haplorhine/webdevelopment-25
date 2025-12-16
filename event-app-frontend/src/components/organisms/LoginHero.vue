@@ -1,21 +1,30 @@
 <script setup>
 import { ref } from 'vue'
+import { login } from '@/api/auth'
 import AtomButton from '../atoms/AtomButton.vue'
 import AtomLink from '../atoms/AtomLink.vue'
 import LabeledInput from '../molecules/LabeledInput.vue'
 import MoleculeFieldset from '../molecules/MoleculeFieldset.vue'
 import ErrorModal from './ErrorModal.vue'
 
-const email = ref('')
+const username = ref('')
 const password = ref('')
 const showError = ref(false)
 const errorMessage = ref('')
 
-const handleLogin = () => {
-  if (email.value !== 'admin@example.com' || password.value !== 'password') {
-    errorMessage.value = 'Invalid email or password. Please try again.'
+const handleLogin = async () => {
+  try {
+    const response = await login(username.value, password.value)
+
+    localStorage.setItem('token', response.token)
+
+    showError.value = false
+    // Force reload to update Navbar state
+    window.location.href = '/'
+  } catch (error) {
+    console.error(error)
+    errorMessage.value = 'Login failed. Please check your username and password.'
     showError.value = true
-    return
   }
 
   showError.value = false
@@ -25,6 +34,7 @@ const handleErrorClose = () => {
   showError.value = false
 }
 </script>
+
 <template>
   <div class="hero bg-base-200 min-h-screen">
     <div class="hero-content flex-col lg:flex-row-reverse">
@@ -32,7 +42,7 @@ const handleErrorClose = () => {
         <h1 class="text-5xl font-bold">Login now!</h1>
         <p class="py-6">
           If you are not registered yet, please check out the
-          <AtomLink href="http://localhost:5173/register"> register page</AtomLink> !
+          <AtomLink href="/register"> register page</AtomLink> !
         </p>
       </div>
 
@@ -41,28 +51,31 @@ const handleErrorClose = () => {
           <form @submit.prevent="handleLogin">
             <MoleculeFieldset>
               <LabeledInput
-                v-model="email"
-                type="email"
-                InputClass="w-full"
-                placeholder="Email"
-                label="Email"
-                id="email-input"
-                name="email"
+                v-model="username"
+                type="text"
+                input-class="w-full"
+                placeholder="Username"
+                label="Username"
+                id="username-input"
+                name="username"
               />
 
               <LabeledInput
                 v-model="password"
                 type="password"
-                InputClass="w-full"
+                input-class="w-full"
                 placeholder="password"
                 label="Password"
                 id="password-input"
                 name="password"
               />
 
-              <div>
-                <AtomLink class="link-hover">Forgot password?</AtomLink>
+              <div class="mt-2">
+                <RouterLink to="/forgot-password" class="link link-hover">
+                  Forgot password?
+                </RouterLink>
               </div>
+
               <AtomButton class="btn-neutral mt-4" label="Login" type="submit" />
             </MoleculeFieldset>
           </form>
