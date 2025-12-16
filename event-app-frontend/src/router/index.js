@@ -13,6 +13,7 @@ const CreateEventView = () => import('@/pages/CreateEventView.vue')
 const EventDetailView = () => import('@/pages/EventDetailView.vue')
 const UserManagementView = () => import('@/pages/UserManagementView.vue')
 const ForgotPasswordView = () => import('@/pages/ForgotPasswordView.vue')
+const ProfileView = () => import('@/pages/ProfileView.vue')
 
 const routes = [
   { path: '/', component: HomeView },
@@ -26,6 +27,7 @@ const routes = [
   { path: '/register', component: RegisterView },
   { path: '/user-management', component: UserManagementView },
   { path: '/forgot-password', component: ForgotPasswordView },
+  { path: '/profile', component: ProfileView },
 ]
 
 const router = createRouter({
