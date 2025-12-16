@@ -1,10 +1,13 @@
 <script setup>
 import { reactive, ref } from 'vue'
+import { useRouter } from 'vue-router'
 import * as yup from 'yup'
 
 defineOptions({
   name: 'RegisterHero',
 })
+
+const router = useRouter()
 
 const form = reactive({
   salutation: '',
@@ -64,6 +67,9 @@ async function handleSubmit() {
     const validData = await schema.validate(form, { abortEarly: false })
     submitSuccess.value = true
     console.log('Valid registration data:', validData)
+
+    // Redirect to login page after successful registration
+    await router.push('/login')
   } catch (err) {
     if (Array.isArray(err.inner)) {
       err.inner.forEach((e) => {
