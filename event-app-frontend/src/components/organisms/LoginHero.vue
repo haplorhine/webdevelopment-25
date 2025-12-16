@@ -1,30 +1,33 @@
 <script setup>
-import { ref } from 'vue'
-import AtomButton from '../atoms/AtomButton.vue'
-import AtomLink from '../atoms/AtomLink.vue'
-import LabeledInput from '../molecules/LabeledInput.vue'
-import MoleculeFieldset from '../molecules/MoleculeFieldset.vue'
-import ErrorModal from './ErrorModal.vue'
+import { ref } from "vue";
+import { RouterLink } from "vue-router";
 
-const email = ref('')
-const password = ref('')
-const showError = ref(false)
-const errorMessage = ref('')
+import AtomButton from "../atoms/AtomButton.vue";
+import AtomLink from "../atoms/AtomLink.vue";
+import LabeledInput from "../molecules/LabeledInput.vue";
+import MoleculeFieldset from "../molecules/MoleculeFieldset.vue";
+import ErrorModal from "./ErrorModal.vue";
+
+const email = ref("");
+const password = ref("");
+const showError = ref(false);
+const errorMessage = ref("");
 
 const handleLogin = () => {
-  if (email.value !== 'admin@example.com' || password.value !== 'password') {
-    errorMessage.value = 'Invalid email or password. Please try again.'
-    showError.value = true
-    return
+  if (email.value !== "admin@example.com" || password.value !== "password") {
+    errorMessage.value = "Invalid email or password. Please try again.";
+    showError.value = true;
+    return;
   }
 
-  showError.value = false
-}
+  showError.value = false;
+};
 
 const handleErrorClose = () => {
-  showError.value = false
-}
+  showError.value = false;
+};
 </script>
+
 <template>
   <div class="hero bg-base-200 min-h-screen">
     <div class="hero-content flex-col lg:flex-row-reverse">
@@ -60,10 +63,18 @@ const handleErrorClose = () => {
                 name="password"
               />
 
-              <div>
-                <AtomLink class="link-hover">Forgot password?</AtomLink>
+
+              <div class="mt-2">
+                <RouterLink to="/forgot-password" class="link link-hover">
+                  Forgot password?
+                </RouterLink>
               </div>
-              <AtomButton class="btn-neutral mt-4" label="Login" type="submit" />
+
+              <AtomButton
+                class="btn-neutral mt-4"
+                label="Login"
+                type="submit"
+              />
             </MoleculeFieldset>
           </form>
         </div>
@@ -76,4 +87,6 @@ const handleErrorClose = () => {
     </ErrorModal>
   </div>
 </template>
+
 <style scoped></style>
+
