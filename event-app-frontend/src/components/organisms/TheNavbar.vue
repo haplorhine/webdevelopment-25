@@ -1,8 +1,8 @@
 <script setup>
 import { RouterLink, useRouter } from 'vue-router'
 import LoginButton from '../molecules/LoginButton.vue'
-import { ref, computed, onMounted } from 'vue'
-import { jwtDecode } from 'jwt-decode'
+import { computed, onMounted } from 'vue'
+import { useUserStore } from '@/state/user'
 
 const props = defineProps({
   links: {
@@ -11,14 +11,14 @@ const props = defineProps({
   },
 })
 
+const userStore = useUserStore()
 const router = useRouter()
-const userRole = ref(null)
 
-const isLoggedIn = computed(() => userRole.value !== null)
+const isLoggedIn = computed(() => userStore.isAuthenticated)
 
 const displayedLinks = computed(() => {
   // Admin logic: Only Events and User Management
-  if (userRole.value === 'ADMIN') {
+  if (userStore.role === 'ADMIN') {
     return [
       { to: '/events', label: 'Events' },
       { to: '/user-management', label: 'User Management' },
@@ -34,7 +34,7 @@ const displayedLinks = computed(() => {
   }
 
   // Host logic: Add Create Event
-  if (userRole.value === 'HOST') {
+  if (userStore.role === 'HOST') {
     currentLinks.push({ to: '/create-event', label: 'Create Event' })
   }
 
@@ -42,22 +42,12 @@ const displayedLinks = computed(() => {
 })
 
 const logout = () => {
-  localStorage.removeItem('token')
-  userRole.value = null
+  userStore.logout()
   router.push('/login')
 }
 
 onMounted(() => {
-  const token = localStorage.getItem('token')
-  if (token) {
-    try {
-      const decoded = jwtDecode(token)
-      userRole.value = decoded.role
-    } catch (error) {
-      console.error('Invalid token', error)
-      localStorage.removeItem('token')
-    }
-  }
+  userStore.loadFromStorage()
 })
 </script>
 <template>
