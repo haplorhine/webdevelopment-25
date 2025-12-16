@@ -1,25 +1,15 @@
 <script setup>
 import { ref, reactive } from 'vue'
-import axios from 'axios'
+import { http } from '@/api/http'
 import * as yup from 'yup'
 import AtomButton from '../atoms/AtomButton.vue'
 import LabeledInput from '../molecules/LabeledInput.vue'
 import MoleculeFieldset from '../molecules/MoleculeFieldset.vue'
-import { jwtDecode } from 'jwt-decode'
+import { useUserStore } from '@/state/user'
+import { storeToRefs } from 'pinia'
 
-const token = localStorage.getItem('token')
-const hostId = ref('')
-if (token) {
-  try {
-    const decoded = jwtDecode(token)
-    hostId.value = decoded.sub
-    console.log('Decoded token:', decoded)
-    console.log('Host ID:', hostId.value)
-  } catch (e) {
-    hostId.value = ''
-    console.error('Failed to decode token:', e)
-  }
-}
+const userStore = useUserStore()
+const { userId } = storeToRefs(userStore)
 
 const title = ref('')
 const category = ref('CHARITY')
@@ -97,15 +87,11 @@ const handleCreateEvent = async () => {
     salesStart: salesStart.value,
     salesEnd: salesEnd.value,
     ticketPrice: ticketPrice.value,
-    hostId: hostId.value,
+    hostId: userId.value,
   }
   try {
     await eventSchema.validate(eventData, { abortEarly: false })
-    await axios.post('http://localhost:8080/events', eventData, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    })
+    await http.post('/events', eventData)
     submitSuccess.value = true
   } catch (err) {
     if (Array.isArray(err?.inner)) {
