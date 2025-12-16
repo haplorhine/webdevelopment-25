@@ -2,6 +2,7 @@
 import { reactive, ref } from 'vue'
 import * as yup from 'yup'
 import axios from 'axios'
+import { useRouter } from 'vue-router'
 
 defineOptions({
   name: 'RegisterHero',
@@ -84,9 +85,7 @@ const schema = yup.object({
   email: yup.string().required().email(),
   username: yup.string().required(),
   password: yup.string().required().min(6).matches(/[a-z]/),
-  // .matches(/[A-Z]/)
-  // .matches(/\d/)
-  // .matches(/[^A-Za-z0-9]/),
+
   repeatPassword: yup
     .string()
     .required()
@@ -94,6 +93,8 @@ const schema = yup.object({
   country: yup.string().required(),
   userType: yup.string().required().oneOf(['USER', 'HOST']),
 })
+
+const router = useRouter()
 
 async function handleSubmit() {
   submitError.value = ''
@@ -116,6 +117,10 @@ async function handleSubmit() {
 
     submitSuccess.value = true
     console.log('Backend response:', response.data)
+
+
+    router.push('/login')
+
   } catch (err) {
     if (Array.isArray(err?.inner)) {
       err.inner.forEach((e) => {
