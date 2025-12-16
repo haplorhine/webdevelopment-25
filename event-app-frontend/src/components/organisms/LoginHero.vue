@@ -26,8 +26,6 @@ const handleLogin = async () => {
     errorMessage.value = 'Login failed. Please check your username and password.'
     showError.value = true
   }
-
-  showError.value = false
 }
 
 const handleErrorClose = () => {
