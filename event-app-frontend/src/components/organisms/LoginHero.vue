@@ -7,7 +7,7 @@ import LabeledInput from '../molecules/LabeledInput.vue'
 import MoleculeFieldset from '../molecules/MoleculeFieldset.vue'
 import ErrorModal from './ErrorModal.vue'
 
-const username = ref('') 
+const username = ref('')
 const password = ref('')
 const showError = ref(false)
 const errorMessage = ref('')
@@ -15,18 +15,19 @@ const errorMessage = ref('')
 const handleLogin = async () => {
   try {
     const response = await login(username.value, password.value)
-    
+
     localStorage.setItem('token', response.token)
-    
+
     showError.value = false
     // Force reload to update Navbar state
     window.location.href = '/'
-    
   } catch (error) {
     console.error(error)
     errorMessage.value = 'Login failed. Please check your username and password.'
     showError.value = true
   }
+
+  showError.value = false
 }
 
 const handleErrorClose = () => {
@@ -69,9 +70,12 @@ const handleErrorClose = () => {
                 name="password"
               />
 
-              <div>
-                <AtomLink class="link-hover">Forgot password?</AtomLink>
+              <div class="mt-2">
+                <RouterLink to="/forgot-password" class="link link-hover">
+                  Forgot password?
+                </RouterLink>
               </div>
+
               <AtomButton class="btn-neutral mt-4" label="Login" type="submit" />
             </MoleculeFieldset>
           </form>
