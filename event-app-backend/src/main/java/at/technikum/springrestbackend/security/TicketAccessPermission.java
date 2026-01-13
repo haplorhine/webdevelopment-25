@@ -23,8 +23,7 @@ public class TicketAccessPermission implements AccessPermission {
     @Override
     public boolean hasPermission(Authentication authentication, UUID resourceId) {
         UserPrincipal principal = (UserPrincipal) authentication.getPrincipal();
-
-        if (principal.getRole().equals(UserType.ADMIN.name())) {
+        if (UserType.ADMIN.name().equals(principal.getRole())) {
             return true;
         }
 
