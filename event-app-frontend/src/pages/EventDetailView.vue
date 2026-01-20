@@ -28,7 +28,9 @@ onMounted(async () => {
     const response = await http.get(`/events/${route.params.id}`)
     event.value = response.data
 
-    if (event.value.hostId) {
+    if (event.value.hostName) {
+        hostName.value = event.value.hostName
+    } else if (event.value.hostId) {
       try {
         const userResponse = await http.get(`/users/${event.value.hostId}`)
         hostName.value = userResponse.data.username
