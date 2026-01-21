@@ -21,7 +21,7 @@
         <mapstruct.version>1.6.3</mapstruct.version>
         <mariadb-java-client.version>3.5.6</mariadb-java-client.version>
         <java-jwt.version>4.5.0</java-jwt.version>
-        <minio.version>8.6.0</minio.version>
+        <minio.version>8.5.13</minio.version>
         <springdoc-openapi-starter-webmvc-ui.version>2.7.0</springdoc-openapi-starter-webmvc-ui.version>
     </properties>
     <dependencies>
