@@ -2,9 +2,11 @@ package at.technikum.springrestbackend.services;
 
 import at.technikum.springrestbackend.dto.UserCreationDto;
 import at.technikum.springrestbackend.dto.UserDto;
+import at.technikum.springrestbackend.entity.ImageEntity;
 import at.technikum.springrestbackend.entity.UserEntity;
 import at.technikum.springrestbackend.entity.UserType;
 import at.technikum.springrestbackend.mapper.UserMapper;
+import at.technikum.springrestbackend.repositories.ImageRepository;
 import at.technikum.springrestbackend.repositories.UserRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -18,11 +20,13 @@ import java.util.UUID;
 @Service
 public class UserService {
     private final UserRepository userRepository;
+    private final ImageRepository imageRepository;
     private final UserMapper userMapper;
     private final PasswordEncoder passwordEncoder;
 
-    public UserService(UserRepository userRepository, UserMapper userMapper,  PasswordEncoder passwordEncoder) {
+    public UserService(UserRepository userRepository, ImageRepository imageRepository, UserMapper userMapper,  PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
+        this.imageRepository = imageRepository;
         this.userMapper = userMapper;
         this.passwordEncoder = passwordEncoder;
     }
@@ -38,6 +42,13 @@ public class UserService {
         }
         userCreationDto.setPassword(passwordEncoder.encode(userCreationDto.getPassword()));
         UserEntity userEntity = userMapper.toEntity(userCreationDto);
+
+        if (userCreationDto.getImageId() != null) {
+            ImageEntity image = imageRepository.findById(userCreationDto.getImageId())
+                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Image not found"));
+            userEntity.setImage(image);
+        }
+
         UserEntity savedUser = userRepository.save(userEntity);
         return userMapper.toDto(savedUser);
     }
@@ -66,6 +77,15 @@ public class UserService {
         UserEntity savedUser = userRepository.findById(id)
             .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
         userMapper.updateEntityFromDto(userCreationDto, savedUser);
+
+        if (userCreationDto.getImageId() != null) {
+            ImageEntity image = imageRepository.findById(userCreationDto.getImageId())
+                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Image not found"));
+            savedUser.setImage(image);
+        } else {
+            savedUser.setImage(null);
+        }
+
         UserEntity updatedUser = userRepository.save(savedUser);
         return userMapper.toDto(updatedUser);
     }

@@ -11,6 +11,8 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.NoArgsConstructor;
 
+import java.util.UUID;
+
 @NoArgsConstructor
 @Getter
 @Setter
@@ -35,6 +37,8 @@ public class UserCreationDto {
 
     @NotNull
     private Country country;
+
+    private UUID imageId;
 
 
 }
