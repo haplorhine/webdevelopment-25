@@ -2,6 +2,7 @@ package at.technikum.springrestbackend.services;
 
 import at.technikum.springrestbackend.dto.ImageDto;
 import at.technikum.springrestbackend.entity.ImageEntity;
+import at.technikum.springrestbackend.mapper.ImageMapper;
 import at.technikum.springrestbackend.repositories.ImageRepository;
 import at.technikum.springrestbackend.storage.FileStorage;
 import jakarta.persistence.EntityNotFoundException;
