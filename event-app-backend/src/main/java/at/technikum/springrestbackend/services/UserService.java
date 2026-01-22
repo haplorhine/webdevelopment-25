@@ -73,20 +73,49 @@ public class UserService {
         return userOpt.get();
     }
 
-    public UserDto updateUser(UUID id, UserCreationDto userCreationDto) {
-        UserEntity savedUser = userRepository.findById(id)
-            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
-        userMapper.updateEntityFromDto(userCreationDto, savedUser);
+    public UserDto updateUser(UUID id, UserCreationDto dto) {
+        UserEntity userEntity = userRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
 
-        if (userCreationDto.getImageId() != null) {
-            ImageEntity image = imageRepository.findById(userCreationDto.getImageId())
-                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Image not found"));
-            savedUser.setImage(image);
-        } else {
-            savedUser.setImage(null);
+        // username
+        if (dto.getUsername() != null && !dto.getUsername().isBlank()) {
+            Optional<UserEntity> existing = userRepository.findByUsername(dto.getUsername());
+            if (existing.isPresent() && !existing.get().getId().equals(id)) {
+                throw new ResponseStatusException(HttpStatus.CONFLICT, "Username already taken");
+            }
+            userEntity.setUsername(dto.getUsername());
         }
 
-        UserEntity updatedUser = userRepository.save(savedUser);
+        // email
+        if (dto.getEmail() != null && !dto.getEmail().isBlank()) {
+            Optional<UserEntity> existing = userRepository.findByEmail(dto.getEmail());
+            if (existing.isPresent() && !existing.get().getId().equals(id)) {
+                throw new ResponseStatusException(HttpStatus.CONFLICT, "Email already taken");
+            }
+            userEntity.setEmail(dto.getEmail());
+        }
+
+        // pw
+        if (dto.getPassword() != null && !dto.getPassword().isBlank()) {
+            userEntity.setPassword(passwordEncoder.encode(dto.getPassword()));
+        }
+
+        // salutation & country
+        if (dto.getSalutation() != null) {
+            userEntity.setSalutation(dto.getSalutation());
+        }
+        if (dto.getCountry() != null) {
+            userEntity.setCountry(dto.getCountry());
+        }
+
+        // image
+        if (dto.getImageId() != null) {
+            ImageEntity image = imageRepository.findById(dto.getImageId())
+                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Image not found"));
+            userEntity.setImage(image);
+        }
+
+        UserEntity updatedUser = userRepository.save(userEntity);
         return userMapper.toDto(updatedUser);
     }
 }
