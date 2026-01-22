@@ -33,7 +33,7 @@ onMounted(async () => {
               class="w-full h-48 object-cover"
             />
           </figure>
-          <div class="card-body flex-grow">
+          <div class="card-body grow">
             <div class="badge badge-primary mb-2">{{ event.category }}</div>
             <h2 class="card-title">{{ event.title }}</h2>
             <p>{{ event.description }}</p>
