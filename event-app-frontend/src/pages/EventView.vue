@@ -5,6 +5,10 @@ import { RouterLink } from 'vue-router'
 
 const events = ref([])
 
+const getImageUrl = (imageId) => {
+  return `http://localhost:8080/images/${imageId}`
+}
+
 onMounted(async () => {
   try {
     const response = await http.get('/events')
@@ -24,7 +28,7 @@ onMounted(async () => {
         <div class="card bg-base-100 shadow-xl h-full flex flex-col">
           <figure>
             <img
-              :src="event.imageURL"
+              :src="getImageUrl(event.imageId)"
               :alt="event.title"
               class="w-full h-48 object-cover"
             />

@@ -23,6 +23,10 @@ const formatDate = (dateString) => {
   })
 }
 
+const getImageUrl = (imageId) => {
+  return `http://localhost:8080/images/${imageId}`
+}
+
 onMounted(async () => {
   try {
     const response = await http.get(`/events/${route.params.id}`)
@@ -103,7 +107,7 @@ const buyTickets = async () => {
       
       <div class="w-full h-64 md:h-96 rounded-2xl overflow-hidden shadow-2xl mb-8 relative">
         <img
-          :src="event.imageURL"
+          :src="getImageUrl(event.imageId)"
           class="w-full h-full object-cover"
           alt="Event Image"
         />

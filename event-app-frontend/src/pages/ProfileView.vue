@@ -14,6 +14,21 @@ const successMessage = ref('')
 const errorMessage = ref('')
 const errors = reactive({})
 
+// Hilfsfunktion für Bild-URL
+const getImageUrl = (imageId) => {
+  if (!imageId) return 'https://placehold.co/150x150?text=Avatar'
+  return `http://localhost:8080/images/${imageId}`
+}
+
+const imageFile = ref(null)
+
+const handleFileChange = (e) => {
+  const files = e.target.files
+  if (files.length > 0) {
+    imageFile.value = files[0]
+  }
+}
+
 // Form State
 const form = reactive({
   id: '',
@@ -24,7 +39,8 @@ const form = reactive({
   country: '',
   userType: 'USER',
   password: '',       // Optional
-  repeatPassword: ''  // Optional
+  repeatPassword: '',  // Optional
+  imageId: null
 })
 
 // Validation Schema
@@ -76,10 +92,11 @@ onMounted(async () => {
     form.email = userData.email
     form.username = userData.username
     form.country = userData.country
-    form.userType = userData.userType // Rolle (meistens readonly, aber wir zeigen sie an)
+    form.userType = userData.userType 
+    form.imageId = userData.imageId
 
     // Salutation Mapping
-    if (['MALE', 'FEMALE'].includes(userData.salutation)) {
+    if (['MR', 'MS'].includes(userData.salutation)) {
       form.salutation = userData.salutation.toLowerCase()
     } else {
       // Annahme: Alles andere ist "other" oder spezifischer String im Backend
@@ -112,6 +129,18 @@ const handleUpdate = async () => {
     // 1. Validieren
     await schema.validate(form, { abortEarly: false })
 
+    // Bildupload Logik
+    if (imageFile.value) {
+      const formData = new FormData()
+      formData.append('file', imageFile.value)
+      
+      const imageResponse = await http.post('/images', formData, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+      })
+      
+      form.imageId = imageResponse.data.id
+    }
+
     // 2. Payload bauen
     const payload = {
       id: form.id,
@@ -120,7 +149,8 @@ const handleUpdate = async () => {
       username: form.username,
       country: form.country, // Enum Values sind im Backend oft UPPERCASE, Frontend hat Mix
       userType: form.userType,
-      active: true // Backend braucht das feld oft
+      active: true, // Backend braucht das feld oft
+      imageId: form.imageId
     }
     
     // Passwort nur senden wenn gesetzt
@@ -140,6 +170,7 @@ const handleUpdate = async () => {
     successMessage.value = 'Profile updated successfully!'
     form.password = ''
     form.repeatPassword = ''
+    imageFile.value = null
 
   } catch (err) {
     console.error(err)
@@ -183,14 +214,25 @@ const handleUpdate = async () => {
                 <span>{{ errorMessage }}</span>
               </div>
 
+              <div class="flex flex-col items-center gap-4 mb-6">
+                <div class="avatar">
+                  <div class="w-24 rounded-full ring ring-primary ring-offset-base-100 ring-offset-2">
+                    <img :src="getImageUrl(form.imageId)" alt="Profile" />
+                  </div>
+                </div>
+                <div class="form-control w-full max-w-xs">
+                  <input type="file" class="file-input file-input-bordered w-full file-input-sm" @change="handleFileChange" accept="image/*" />
+                </div>
+              </div>
+
               <div class="form-control w-full">
                 <label class="label"><span class="label-text font-semibold">Salutation</span></label>
                 <select 
                   v-model="form.salutation" 
                   :class="['select select-bordered w-full', {'select-error': errors.salutation}]"
                 >
-                  <option value="male">Male</option>
-                  <option value="female">Female</option>
+                  <option value="mr">Mr</option>
+                  <option value="ms">Ms</option>
                   <option value="other">Other</option>
                 </select>
                 <span v-if="errors.salutation" class="text-error text-xs mt-1">{{ errors.salutation }}</span>
