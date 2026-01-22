@@ -26,7 +26,7 @@ public class EventDto {
 
     private Category category;
 
-    private String imageURL;
+    private UUID imageId;
 
     private String description;
 
