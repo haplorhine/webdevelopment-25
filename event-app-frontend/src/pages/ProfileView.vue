@@ -3,7 +3,6 @@ import { reactive, ref, onMounted } from 'vue'
 import * as yup from 'yup'
 import { http } from '@/api/http'
 import { jwtDecode } from 'jwt-decode'
-//import LabeledInput from '@/components/molecules/LabeledInput.vue'
 import MoleculeFieldset from '@/components/molecules/MoleculeFieldset.vue'
 import AtomButton from '@/components/atoms/AtomButton.vue'
 
@@ -14,7 +13,6 @@ const successMessage = ref('')
 const errorMessage = ref('')
 const errors = reactive({})
 
-// Hilfsfunktion für Bild-URL
 const getImageUrl = (imageId) => {
   if (!imageId) return 'https://placehold.co/150x150?text=Avatar'
   return `http://localhost:8080/images/${imageId}`
@@ -38,12 +36,12 @@ const form = reactive({
   username: '',
   country: '',
   userType: 'USER',
-  password: '',       // Optional
-  repeatPassword: '',  // Optional
+  password: '',       
+  repeatPassword: '',  
   imageId: null
 })
 
-// Validation Schema
+// validation
 const schema = yup.object({
   salutation: yup.string().required(),
   salutationOther: yup.string().when('salutation', {
@@ -54,7 +52,6 @@ const schema = yup.object({
   email: yup.string().required().email(),
   username: yup.string().required().min(4),
   country: yup.string().required(),
-  // Passwort Logik: Optional, aber wenn eingegeben, dann Validierung
   password: yup.string().test('min-length', 'Password must be at least 5 characters', 
     val => !val || val.length >= 5
   ).nullable(),
@@ -81,13 +78,11 @@ onMounted(async () => {
 
   try {
     const decoded = jwtDecode(token)
-    userId.value = decoded.sub // User ID aus dem Token (subject)
+    userId.value = decoded.sub
     
-    // Daten vom Backend laden
     const response = await http.get(`/users/${userId.value}`)
     const userData = response.data
 
-    // Formular befüllen
     form.id = userData.id
     form.email = userData.email
     form.username = userData.username
@@ -95,15 +90,12 @@ onMounted(async () => {
     form.userType = userData.userType 
     form.imageId = userData.imageId
 
-    // Salutation Mapping
     if (['MR', 'MS'].includes(userData.salutation)) {
       form.salutation = userData.salutation.toLowerCase()
     } else {
-      // Annahme: Alles andere ist "other" oder spezifischer String im Backend
-      // Falls das Backend "OTHER" speichert, müssen wir hier aufpassen
+
        if(userData.salutation === 'OTHER') {
            form.salutation = 'other'
-           // Falls backend den spezifischen Text speichert, müsste er hier geladen werden
        } else {
            form.salutation = userData.salutation.toLowerCase()
        }
@@ -126,10 +118,9 @@ const handleUpdate = async () => {
   Object.keys(errors).forEach(key => delete errors[key])
 
   try {
-    // 1. Validieren
     await schema.validate(form, { abortEarly: false })
 
-    // Bildupload Logik
+    // image upload
     if (imageFile.value) {
       const formData = new FormData()
       formData.append('file', imageFile.value)
@@ -141,30 +132,26 @@ const handleUpdate = async () => {
       form.imageId = imageResponse.data.id
     }
 
-    // 2. Payload bauen
     const payload = {
       id: form.id,
       salutation: form.salutation.toUpperCase(),
       email: form.email,
       username: form.username,
-      country: form.country, // Enum Values sind im Backend oft UPPERCASE, Frontend hat Mix
+      country: form.country,
       userType: form.userType,
-      active: true, // Backend braucht das feld oft
+      active: true,
       imageId: form.imageId
     }
     
-    // Passwort nur senden wenn gesetzt
     if (form.password) {
       payload.password = form.password
     } else {
-      payload.password = null // oder weglassen, je nach Backend Toleranz
+      payload.password = null
     }
 
-    // Country Formatting (wenn Enum im Backend UPPERCASE_UNDERSCORE erwartet)
-    // Einfache Heuristik: Leerzeichen durch _ ersetzen und Uppercase
     payload.country = payload.country.toUpperCase().replace(/ /g, '_')
 
-    // 3. Request senden
+    //Request senden
     await http.put(`/users/${userId.value}`, payload)
     
     successMessage.value = 'Profile updated successfully!'
