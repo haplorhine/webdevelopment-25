@@ -90,11 +90,6 @@ onMounted(() => {
       </ul>
     </div>
     <div class="navbar-end flex gap-2">
-      <input
-        type="text"
-        placeholder="Search for events"
-        class="input input-bordered w-24 md:w-auto"
-      />
       <div v-if="isLoggedIn" class="dropdown dropdown-end">
         <div tabindex="0" role="button" class="btn btn-ghost btn-circle avatar">
           <div class="w-10 rounded-full">
