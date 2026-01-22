@@ -64,8 +64,12 @@ const schema = yup.object({
 
 const dachCountries = ['Germany', 'Austria', 'Switzerland']
 const otherCountries = [
-  'France', 'Italy', 'Spain', 'United Kingdom', 'United States',
-  'Poland', 'Netherlands', 'Belgium'
+  'Afghanistan', 'Albania', 'Algeria', 'Andorra', 'Angola', 'Argentina', 'Armenia', 'Australia',
+  'Azerbaijan', 'Bahamas', 'Bahrain', 'Bangladesh', 'Belarus', 'Belgium', 'Brazil', 'Canada',
+  'China', 'Denmark', 'Egypt', 'Finland', 'France', 'Greece', 'India', 'Indonesia', 'Iran',
+  'Iraq', 'Ireland', 'Israel', 'Italy', 'Japan', 'Kenya', 'Mexico', 'Netherlands', 'Norway',
+  'Poland', 'Portugal', 'Russia', 'Saudi Arabia', 'Spain', 'Sweden', 'Thailand', 'Turkey',
+  'Ukraine', 'United Kingdom', 'United States', 'Vietnam', 'Zambia', 'Zimbabwe',
 ]
 
 onMounted(async () => {
@@ -151,7 +155,6 @@ const handleUpdate = async () => {
 
     payload.country = payload.country.toUpperCase().replace(/ /g, '_')
 
-    //Request senden
     await http.put(`/users/${userId.value}`, payload)
     
     successMessage.value = 'Profile updated successfully!'

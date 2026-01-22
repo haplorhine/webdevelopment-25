@@ -23,7 +23,7 @@ const fetchUsers = async () => {
     users.value = response.data
   } catch (err) {
     console.error(err)
-    error.value = 'Failed to load users. Ensure you are logged in as ADMIN.'
+    error.value = 'Failed to load users. Please try again later.'
   } finally {
     loading.value = false
   }
