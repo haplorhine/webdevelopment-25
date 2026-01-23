@@ -26,13 +26,23 @@ onMounted(async () => {
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
       <div v-for="event in events" :key="event.id">
         <div class="card bg-base-100 shadow-xl h-full flex flex-col">
+          
           <figure>
             <img
+              v-if="event.imageId"
               :src="getImageUrl(event.imageId)"
               :alt="event.title"
               class="w-full h-48 object-cover"
             />
+            
+            <div 
+              v-else 
+              class="w-full h-48 bg-base-200 flex items-center justify-center text-base-content/30"
+            >
+              <span class="text-5xl">📸❌</span>
+            </div>
           </figure>
+
           <div class="card-body grow">
             <div class="badge badge-primary mb-2">{{ event.category }}</div>
             <h2 class="card-title">{{ event.title }}</h2>
