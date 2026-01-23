@@ -45,7 +45,7 @@ class AuthServiceTest {
         requestDto = new TokenRequestDto();
         requestDto.setUsername("john");
         requestDto.setPassword("secret");
-        principal = new UserPrincipal(UUID.randomUUID(), "john", "encoded", "ROLE_USER");
+        principal = new UserPrincipal(UUID.randomUUID(), "john", "encoded", "ROLE_USER", true);
     }
 
     @AfterEach
