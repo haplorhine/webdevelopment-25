@@ -27,5 +27,7 @@ public class UserDto {
 
     private Country country;
 
+    private UUID imageId;
 
+    private boolean isActive;
 }

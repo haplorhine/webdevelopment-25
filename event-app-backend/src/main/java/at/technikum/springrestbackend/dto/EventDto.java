@@ -1,6 +1,7 @@
 package at.technikum.springrestbackend.dto;
 
 import at.technikum.springrestbackend.entity.Category;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -26,7 +27,7 @@ public class EventDto {
 
     private Category category;
 
-    private String imageURL;
+    private UUID imageId;
 
     private String description;
 
@@ -39,6 +40,7 @@ public class EventDto {
     @NotNull
     private LocalDateTime endDate;
 
+    @Min(1)
     private Integer maxParticipants;
 
     @NotNull
@@ -51,6 +53,8 @@ public class EventDto {
 
     @NotNull
     private UUID hostId; // UserId des Hosts
+
+    private String hostName;
 
     private LocalDateTime createdDate;
 

@@ -31,7 +31,10 @@ public class EventEntity {
     @Enumerated(EnumType.STRING)
     private Category category;
 
-    private String imageURL;
+    @OneToOne
+    @JoinColumn
+    private ImageEntity image;
+
     private String description;
 
     @Column(nullable = false)

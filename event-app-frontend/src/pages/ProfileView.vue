@@ -3,7 +3,6 @@ import { reactive, ref, onMounted } from 'vue'
 import * as yup from 'yup'
 import { http } from '@/api/http'
 import { jwtDecode } from 'jwt-decode'
-//import LabeledInput from '@/components/molecules/LabeledInput.vue'
 import MoleculeFieldset from '@/components/molecules/MoleculeFieldset.vue'
 import AtomButton from '@/components/atoms/AtomButton.vue'
 
@@ -14,6 +13,20 @@ const successMessage = ref('')
 const errorMessage = ref('')
 const errors = reactive({})
 
+const getImageUrl = (imageId) => {
+  if (!imageId) return 'https://placehold.co/150x150?text=Avatar'
+  return `http://localhost:8080/images/${imageId}`
+}
+
+const imageFile = ref(null)
+
+const handleFileChange = (e) => {
+  const files = e.target.files
+  if (files.length > 0) {
+    imageFile.value = files[0]
+  }
+}
+
 // Form State
 const form = reactive({
   id: '',
@@ -23,11 +36,12 @@ const form = reactive({
   username: '',
   country: '',
   userType: 'USER',
-  password: '',       // Optional
-  repeatPassword: ''  // Optional
+  password: '',       
+  repeatPassword: '',  
+  imageId: null
 })
 
-// Validation Schema
+// validation
 const schema = yup.object({
   salutation: yup.string().required(),
   salutationOther: yup.string().when('salutation', {
@@ -38,7 +52,6 @@ const schema = yup.object({
   email: yup.string().required().email(),
   username: yup.string().required().min(4),
   country: yup.string().required(),
-  // Passwort Logik: Optional, aber wenn eingegeben, dann Validierung
   password: yup.string().test('min-length', 'Password must be at least 5 characters', 
     val => !val || val.length >= 5
   ).nullable(),
@@ -51,8 +64,12 @@ const schema = yup.object({
 
 const dachCountries = ['Germany', 'Austria', 'Switzerland']
 const otherCountries = [
-  'France', 'Italy', 'Spain', 'United Kingdom', 'United States',
-  'Poland', 'Netherlands', 'Belgium'
+  'Afghanistan', 'Albania', 'Algeria', 'Andorra', 'Angola', 'Argentina', 'Armenia', 'Australia',
+  'Azerbaijan', 'Bahamas', 'Bahrain', 'Bangladesh', 'Belarus', 'Belgium', 'Brazil', 'Canada',
+  'China', 'Denmark', 'Egypt', 'Finland', 'France', 'Greece', 'India', 'Indonesia', 'Iran',
+  'Iraq', 'Ireland', 'Israel', 'Italy', 'Japan', 'Kenya', 'Mexico', 'Netherlands', 'Norway',
+  'Poland', 'Portugal', 'Russia', 'Saudi Arabia', 'Spain', 'Sweden', 'Thailand', 'Turkey',
+  'Ukraine', 'United Kingdom', 'United States', 'Vietnam', 'Zambia', 'Zimbabwe',
 ]
 
 onMounted(async () => {
@@ -65,28 +82,24 @@ onMounted(async () => {
 
   try {
     const decoded = jwtDecode(token)
-    userId.value = decoded.sub // User ID aus dem Token (subject)
+    userId.value = decoded.sub
     
-    // Daten vom Backend laden
     const response = await http.get(`/users/${userId.value}`)
     const userData = response.data
 
-    // Formular befüllen
     form.id = userData.id
     form.email = userData.email
     form.username = userData.username
     form.country = userData.country
-    form.userType = userData.userType // Rolle (meistens readonly, aber wir zeigen sie an)
+    form.userType = userData.userType 
+    form.imageId = userData.imageId
 
-    // Salutation Mapping
-    if (['MALE', 'FEMALE'].includes(userData.salutation)) {
+    if (['MR', 'MS'].includes(userData.salutation)) {
       form.salutation = userData.salutation.toLowerCase()
     } else {
-      // Annahme: Alles andere ist "other" oder spezifischer String im Backend
-      // Falls das Backend "OTHER" speichert, müssen wir hier aufpassen
+
        if(userData.salutation === 'OTHER') {
            form.salutation = 'other'
-           // Falls backend den spezifischen Text speichert, müsste er hier geladen werden
        } else {
            form.salutation = userData.salutation.toLowerCase()
        }
@@ -109,37 +122,45 @@ const handleUpdate = async () => {
   Object.keys(errors).forEach(key => delete errors[key])
 
   try {
-    // 1. Validieren
     await schema.validate(form, { abortEarly: false })
 
-    // 2. Payload bauen
+    // image upload
+    if (imageFile.value) {
+      const formData = new FormData()
+      formData.append('file', imageFile.value)
+      
+      const imageResponse = await http.post('/images', formData, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+      })
+      
+      form.imageId = imageResponse.data.id
+    }
+
     const payload = {
       id: form.id,
       salutation: form.salutation.toUpperCase(),
       email: form.email,
       username: form.username,
-      country: form.country, // Enum Values sind im Backend oft UPPERCASE, Frontend hat Mix
+      country: form.country,
       userType: form.userType,
-      active: true // Backend braucht das feld oft
+      active: true,
+      imageId: form.imageId
     }
     
-    // Passwort nur senden wenn gesetzt
     if (form.password) {
       payload.password = form.password
     } else {
-      payload.password = null // oder weglassen, je nach Backend Toleranz
+      payload.password = null
     }
 
-    // Country Formatting (wenn Enum im Backend UPPERCASE_UNDERSCORE erwartet)
-    // Einfache Heuristik: Leerzeichen durch _ ersetzen und Uppercase
     payload.country = payload.country.toUpperCase().replace(/ /g, '_')
 
-    // 3. Request senden
     await http.put(`/users/${userId.value}`, payload)
     
     successMessage.value = 'Profile updated successfully!'
     form.password = ''
     form.repeatPassword = ''
+    imageFile.value = null
 
   } catch (err) {
     console.error(err)
@@ -183,14 +204,25 @@ const handleUpdate = async () => {
                 <span>{{ errorMessage }}</span>
               </div>
 
+              <div class="flex flex-col items-center gap-4 mb-6">
+                <div class="avatar">
+                  <div class="w-24 rounded-full ring ring-primary ring-offset-base-100 ring-offset-2">
+                    <img :src="getImageUrl(form.imageId)" alt="Profile" />
+                  </div>
+                </div>
+                <div class="form-control w-full max-w-xs">
+                  <input type="file" class="file-input file-input-bordered w-full file-input-sm" @change="handleFileChange" accept="image/*" />
+                </div>
+              </div>
+
               <div class="form-control w-full">
                 <label class="label"><span class="label-text font-semibold">Salutation</span></label>
                 <select 
                   v-model="form.salutation" 
                   :class="['select select-bordered w-full', {'select-error': errors.salutation}]"
                 >
-                  <option value="male">Male</option>
-                  <option value="female">Female</option>
+                  <option value="mr">Mr</option>
+                  <option value="ms">Ms</option>
                   <option value="other">Other</option>
                 </select>
                 <span v-if="errors.salutation" class="text-error text-xs mt-1">{{ errors.salutation }}</span>

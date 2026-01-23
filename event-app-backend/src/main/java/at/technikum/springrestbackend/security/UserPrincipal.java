@@ -12,8 +12,8 @@ public class UserPrincipal extends User {
     private UUID id;
     private String role;
 
-    public UserPrincipal(UUID id, String username, String password, String role) {
-        super(username, password, List.of(new SimpleGrantedAuthority(role)));
+    public UserPrincipal(UUID id, String username, String password, String role, boolean isActive) {
+        super(username, password, isActive, true, true, true, List.of(new SimpleGrantedAuthority(role)));
         this.id = id;
         this.role = role;
     }

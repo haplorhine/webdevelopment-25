@@ -4,13 +4,21 @@ import at.technikum.springrestbackend.dto.UserCreationDto;
 import at.technikum.springrestbackend.dto.UserDto;
 import at.technikum.springrestbackend.entity.UserEntity;
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.mapstruct.MappingTarget;
 
 @Mapper(componentModel = "spring")
 public interface UserMapper {
+    @Mapping(target = "imageId", source = "image.id")
     UserDto toDto(UserEntity userEntity);
+
+    // image wird im Service gesetzt
+    @Mapping(target = "image", ignore = true)
     UserEntity toEntity(UserCreationDto dto);
 
-    @org.mapstruct.Mapping(target = "id", ignore = true)
-    @org.mapstruct.Mapping(target = "createdDate", ignore = true)
-    void updateEntityFromDto(UserCreationDto dto, @org.mapstruct.MappingTarget UserEntity entity);
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "createdDate", ignore = true)
+    // image wird im Service aktualisiert
+    @Mapping(target = "image", ignore = true)
+    void updateEntityFromDto(UserCreationDto dto, @MappingTarget UserEntity entity);
 }

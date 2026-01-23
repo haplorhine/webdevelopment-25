@@ -23,12 +23,19 @@ const formatDate = (dateString) => {
   })
 }
 
+const getImageUrl = (imageId) => {
+  if (!imageId) return null
+  return `http://localhost:8080/images/${imageId}`
+}
+
 onMounted(async () => {
   try {
     const response = await http.get(`/events/${route.params.id}`)
     event.value = response.data
 
-    if (event.value.hostId) {
+    if (event.value.hostName) {
+        hostName.value = event.value.hostName
+    } else if (event.value.hostId) {
       try {
         const userResponse = await http.get(`/users/${event.value.hostId}`)
         hostName.value = userResponse.data.username
@@ -101,7 +108,7 @@ const buyTickets = async () => {
       
       <div class="w-full h-64 md:h-96 rounded-2xl overflow-hidden shadow-2xl mb-8 relative">
         <img
-          :src="event.imageURL"
+          :src="getImageUrl(event.imageId)"
           class="w-full h-full object-cover"
           alt="Event Image"
         />
@@ -171,6 +178,11 @@ const buyTickets = async () => {
           <div class="bg-base-100 p-6 rounded-xl shadow-sm">
              <h2 class="text-2xl font-bold mb-4">About this Event</h2>
              <p class="whitespace-pre-line text-lg leading-relaxed">{{ event.description }}</p>
+
+             <div class="mt-8 pt-4 border-t border-base-200 text-xs text-base-content/50 flex flex-col sm:flex-row gap-2 sm:gap-6">
+                <span>Created: {{ formatDate(event.createdDate) }}</span>
+                <span v-if="event.lastModifiedDate">Last updated: {{ formatDate(event.lastModifiedDate) }}</span>
+             </div>
           </div>
 
         </div>

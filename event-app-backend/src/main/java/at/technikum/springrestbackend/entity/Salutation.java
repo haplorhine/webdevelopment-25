@@ -1,7 +1,7 @@
 package at.technikum.springrestbackend.entity;
 
 public enum Salutation {
-    MALE,
-    FEMALE,
+    MR,
+    MS,
     OTHER
 }

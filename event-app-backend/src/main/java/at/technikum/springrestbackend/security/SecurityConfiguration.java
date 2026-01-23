@@ -40,6 +40,7 @@ public class SecurityConfiguration {
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
                 .securityMatcher("/**")
                 .authorizeHttpRequests(registry -> registry
+                        .requestMatchers("/images/**").permitAll()
                         .requestMatchers("/error").permitAll()
                         .requestMatchers(HttpMethod.POST, "/users").permitAll()
                         .requestMatchers("/auth/token").permitAll()

@@ -2,21 +2,32 @@ package at.technikum.springrestbackend.security;
 
 
 import at.technikum.springrestbackend.entity.UserEntity;
-import at.technikum.springrestbackend.services.UserService;
-import lombok.RequiredArgsConstructor;
+import at.technikum.springrestbackend.repositories.UserRepository;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
-@Component
-@RequiredArgsConstructor
+@Service
 public class CustomUserDetailService implements UserDetailsService {
-    private final UserService userService;
+
+    private final UserRepository userRepository;
+
+    public CustomUserDetailService(UserRepository userRepository) {
+        this.userRepository = userRepository;
+    }
 
     @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        UserEntity user = userService.findUserByUsername(username);
-        return new UserPrincipal(user.getId(), user.getUsername(), user.getPassword(), user.getUserType().toString());
+    public UserDetails loadUserByUsername(String usernameOrEmail) throws UsernameNotFoundException {
+        UserEntity user = userRepository.findByUsernameOrEmail(usernameOrEmail, usernameOrEmail)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found..."));
+
+        return new UserPrincipal(
+                user.getId(),
+                user.getUsername(),
+                user.getPassword(),
+                user.getUserType().name(),
+                user.isActive()
+        );
     }
 }

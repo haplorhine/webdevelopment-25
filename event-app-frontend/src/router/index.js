@@ -1,4 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router'
+import { useUserStore } from '@/state/user'
 
 import HomeView from '@/pages/HomeView.vue'
 
@@ -25,14 +26,30 @@ const routes = [
   { path: '/help', component: HelpView },
   { path: '/login', component: LoginView },
   { path: '/register', component: RegisterView },
-  { path: '/user-management', component: UserManagementView },
   { path: '/forgot-password', component: ForgotPasswordView },
-  { path: '/profile', component: ProfileView },
+  { path: '/profile', component: ProfileView },  
+  { path: '/user-management',
+    component: UserManagementView,
+  meta: {requiresAdmin: true}
+},
+
 ]
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes,
 })
+
+router.beforeEach((to, from, next) => {
+  const userStore = useUserStore()
+
+  if (to.meta.requiresAdmin) {
+    if (!userStore.isAdmin) {
+      return next('/') 
+    }
+  }
+  next()
+})
+
 
 export default router

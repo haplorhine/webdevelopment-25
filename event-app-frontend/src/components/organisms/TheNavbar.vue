@@ -16,8 +16,12 @@ const router = useRouter()
 
 const isLoggedIn = computed(() => userStore.isAuthenticated)
 
+const getImageUrl = (imageId) => {
+  if (!imageId) return null
+  return `http://localhost:8080/images/${imageId}`
+}
+
 const displayedLinks = computed(() => {
-  // Admin logic: Only Events and User Management
   if (userStore.role === 'ADMIN') {
     return [
       { to: '/events', label: 'Events' },
@@ -25,15 +29,12 @@ const displayedLinks = computed(() => {
     ]
   }
 
-  // Base links (copy to avoid mutation)
   let currentLinks = [...props.links]
 
-  // Hide Register if logged in
   if (isLoggedIn.value) {
     currentLinks = currentLinks.filter((link) => link.label !== 'Register')
   }
 
-  // Host logic: Add Create Event
   if (userStore.role === 'HOST') {
     currentLinks.push({ to: '/create-event', label: 'Create Event' })
   }
@@ -89,20 +90,22 @@ onMounted(() => {
       </ul>
     </div>
     <div class="navbar-end flex gap-2">
-      <input
-        type="text"
-        placeholder="Search for events"
-        class="input input-bordered w-24 md:w-auto"
-      />
       <div v-if="isLoggedIn" class="dropdown dropdown-end">
         <div tabindex="0" role="button" class="btn btn-ghost btn-circle avatar">
           <div class="w-10 rounded-full">
             <img
+              v-if="userStore.imageId"
+              :src="getImageUrl(userStore.imageId)"
+              alt="User Profile"
+              class="object-cover w-full h-full"
+            />
+            <img
+              v-else
               alt="Tailwind CSS Navbar component"
               src="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp"
             />
           </div>
-        </div>
+          </div>
         <ul
           tabindex="-1"
           class="menu menu-sm dropdown-content bg-base-100 rounded-box z-1 mt-3 w-52 p-2 shadow"
@@ -110,10 +113,9 @@ onMounted(() => {
           <li>
             <RouterLink to="/profile" class="justify-between">
               Profile
-              <span class="badge">New</span>
+              <span class="badge">Customize</span>
             </RouterLink>
           </li>
-          <li><a>Settings</a></li>
           <li><a @click="logout">Logout</a></li>
         </ul>
       </div>
