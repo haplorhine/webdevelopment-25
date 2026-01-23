@@ -53,4 +53,6 @@ public class UserEntity {
     @OneToOne
     @JoinColumn
     private ImageEntity image;
+
+    private boolean isActive;
 }

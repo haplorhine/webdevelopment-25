@@ -40,5 +40,5 @@ public class UserCreationDto {
 
     private UUID imageId;
 
-
+    private Boolean isActive;
 }

@@ -65,13 +65,13 @@ public class UserService {
         return userMapper.toDto(userOpt.get());
     }
 
-    public UserEntity findUserByUsername(String username) {
-        Optional<UserEntity> userOpt = userRepository.findByUsername(username);
-        if (userOpt.isEmpty()) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
-        }
-        return userOpt.get();
-    }
+//    public UserEntity findUserByUsername(String username) {
+//        Optional<UserEntity> userOpt = userRepository.findByUsername(username);
+//        if (userOpt.isEmpty()) {
+//            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+//        }
+//        return userOpt.get();
+//    }
 
     public UserDto updateUser(UUID id, UserCreationDto dto) {
         UserEntity userEntity = userRepository.findById(id)
@@ -113,6 +113,11 @@ public class UserService {
             ImageEntity image = imageRepository.findById(dto.getImageId())
                     .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Image not found"));
             userEntity.setImage(image);
+        }
+
+        // active
+        if(dto.getIsActive() != null){
+            userEntity.setActive(dto.getIsActive());
         }
 
         UserEntity updatedUser = userRepository.save(userEntity);

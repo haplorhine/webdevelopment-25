@@ -19,6 +19,7 @@ export const useUserStore = defineStore('user', {
     username: (state) => state.data.username,
     role: (state) => state.data.role,
     imageId: (state) => state.data.imageId,
+    isAdmin: (state) => state.data.role === 'ADMIN',
   },
   actions: {
     async setToken(token) {

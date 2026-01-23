@@ -29,5 +29,5 @@ public class UserDto {
 
     private UUID imageId;
 
-
+    private boolean isActive;
 }
