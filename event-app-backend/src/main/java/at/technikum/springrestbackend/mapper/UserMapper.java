@@ -19,7 +19,7 @@ public interface UserMapper {
 
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "createdDate", ignore = true)
-    @Mapping(target = "lastModifiedDate", ignore = true)
+
     // image wird im Service aktualisiert
     @Mapping(target = "image", ignore = true)
     @Mapping(target = "active", source = "isActive")
