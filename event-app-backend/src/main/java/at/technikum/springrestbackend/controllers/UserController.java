@@ -2,7 +2,9 @@ package at.technikum.springrestbackend.controllers;
 
 import at.technikum.springrestbackend.dto.UserCreationDto;
 import at.technikum.springrestbackend.dto.UserDto;
+import at.technikum.springrestbackend.dto.TicketDto;
 import at.technikum.springrestbackend.services.UserService;
+import at.technikum.springrestbackend.services.TicketService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -14,9 +16,11 @@ import java.util.UUID;
 @RestController
 public class UserController {
     private final UserService userService;
+    private final TicketService ticketService;
 
-    public UserController(UserService userService) {
+    public UserController(UserService userService, TicketService ticketService) {
         this.userService = userService;
+        this.ticketService = ticketService;
     }
 
     @GetMapping("/users")
@@ -47,5 +51,11 @@ public class UserController {
     @PreAuthorize("hasAuthority('ADMIN') or hasPermission(#id, T(at.technikum.springrestbackend.entity.UserEntity).getName(), 'write')")
     public UserDto updateUser(@PathVariable UUID id, @RequestBody @Valid UserCreationDto userCreationDto) {
         return userService.updateUser(id, userCreationDto);
+    }
+
+    @GetMapping("/users/{id}/tickets")
+    @PreAuthorize("hasAuthority('ADMIN') or hasPermission(#id, T(at.technikum.springrestbackend.entity.UserEntity).getName(), 'read')")
+    public List<TicketDto> getTicketsByUser(@PathVariable UUID id) {
+        return ticketService.getTicketsByUserId(id);
     }
 }
