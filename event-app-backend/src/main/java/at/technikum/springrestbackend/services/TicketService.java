@@ -38,29 +38,8 @@ public class TicketService {
         this.userRepository = userRepository;
     }
 
-    public List<TicketDto> getAllTickets() {
-        // 1. Aktuellen User aus dem Security Context holen
-        var auth = SecurityContextHolder.getContext().getAuthentication();
-
-        // 2. Prüfen: Ist es ein ADMIN?
-        boolean isAdmin = auth.getAuthorities().stream()
-                .anyMatch(a -> a.getAuthority().equals("ADMIN"));
-
-        List<TicketEntity> tickets;
-
-        if (isAdmin) {
-            // ADMIN: Darf alles sehen -> findAll()
-            tickets = ticketRepository.findAll();
-        } else {
-            // USER/HOST: Darf nur eigene sehen -> findAllByUserId()
-            UserPrincipal principal = (UserPrincipal) auth.getPrincipal();
-            tickets = ticketRepository.findAllByUserId(principal.getId());
-        }
-
-        // 3. Mapping Entity -> DTO
-        return tickets.stream()
-                .map(ticketMapper::toDto)
-                .toList();
+    public List<TicketDto> getTickets() {
+        return ticketRepository.findAll().stream().map(ticketMapper::toDto).toList();
     }
 
     public TicketDto createTicket(TicketDto ticketDto) {
@@ -131,5 +110,9 @@ public class TicketService {
 
     public void deleteTicketById(UUID id) {
         ticketRepository.deleteById(id);
+    }
+
+    public List<TicketDto> getTicketsByUserId(UUID userId) {
+        return ticketRepository.findAllByUserId(userId).stream().map(ticketMapper::toDto).toList();
     }
 }
