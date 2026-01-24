@@ -11,7 +11,9 @@ import at.technikum.springrestbackend.repositories.EventRepository;
 import at.technikum.springrestbackend.repositories.TicketRepository;
 
 import at.technikum.springrestbackend.repositories.UserRepository;
+import at.technikum.springrestbackend.security.UserPrincipal;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -36,8 +38,29 @@ public class TicketService {
         this.userRepository = userRepository;
     }
 
-    public List<TicketDto> getTickets() {
-        return ticketRepository.findAll().stream().map(ticketMapper::toDto).toList();
+    public List<TicketDto> getAllTickets() {
+        // 1. Aktuellen User aus dem Security Context holen
+        var auth = SecurityContextHolder.getContext().getAuthentication();
+
+        // 2. Prüfen: Ist es ein ADMIN?
+        boolean isAdmin = auth.getAuthorities().stream()
+                .anyMatch(a -> a.getAuthority().equals("ADMIN"));
+
+        List<TicketEntity> tickets;
+
+        if (isAdmin) {
+            // ADMIN: Darf alles sehen -> findAll()
+            tickets = ticketRepository.findAll();
+        } else {
+            // USER/HOST: Darf nur eigene sehen -> findAllByUserId()
+            UserPrincipal principal = (UserPrincipal) auth.getPrincipal();
+            tickets = ticketRepository.findAllByUserId(principal.getId());
+        }
+
+        // 3. Mapping Entity -> DTO
+        return tickets.stream()
+                .map(ticketMapper::toDto)
+                .toList();
     }
 
     public TicketDto createTicket(TicketDto ticketDto) {

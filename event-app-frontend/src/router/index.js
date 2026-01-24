@@ -13,8 +13,10 @@ const EventView = () => import('@/pages/EventView.vue')
 const CreateEventView = () => import('@/pages/CreateEventView.vue')
 const EventDetailView = () => import('@/pages/EventDetailView.vue')
 const UserManagementView = () => import('@/pages/UserManagementView.vue')
+const TicketManagementView = () => import('@/pages/TicketManagementView.vue')
 const ForgotPasswordView = () => import('@/pages/ForgotPasswordView.vue')
 const ProfileView = () => import('@/pages/ProfileView.vue')
+const MyTicketsView = () => import('@/pages/MyTicketsView.vue')
 
 const routes = [
   { path: '/', component: HomeView },
@@ -28,8 +30,13 @@ const routes = [
   { path: '/register', component: RegisterView },
   { path: '/forgot-password', component: ForgotPasswordView },
   { path: '/profile', component: ProfileView },  
+  { path: '/my-tickets', component: MyTicketsView},
   { path: '/user-management',
     component: UserManagementView,
+  meta: {requiresAdmin: true}
+},
+  { path: '/ticket-management',
+    component: TicketManagementView,
   meta: {requiresAdmin: true}
 },
 

@@ -24,9 +24,9 @@ public class TicketController {
     }
 
     @GetMapping("/tickets")
-    @PreAuthorize("hasAuthority('ADMIN')")
+    @PreAuthorize("isAuthenticated()")
     public List<TicketDto> getTickets() {
-        return ticketService.getTickets();
+        return ticketService.getAllTickets();
     }
 
     @PostMapping("/tickets")
