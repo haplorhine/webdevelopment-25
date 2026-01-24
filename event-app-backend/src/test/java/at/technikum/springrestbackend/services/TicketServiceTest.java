@@ -76,7 +76,7 @@ class TicketServiceTest {
         when(ticketMapper.toDto(ticketEntity)).thenReturn(ticketDto);
         when(ticketMapper.toDto(other)).thenReturn(otherDto);
 
-        List<TicketDto> result = ticketService.getTickets();
+        List<TicketDto> result = ticketService.getAllTickets();
 
         assertThat(result).containsExactly(ticketDto, otherDto);
         verify(ticketRepository).findAll();

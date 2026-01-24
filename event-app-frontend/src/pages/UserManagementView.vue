@@ -200,7 +200,6 @@ onMounted(() => {
               <th class="text-center">User</th>
               <th class="text-center">Role</th>
               <th class="text-center">Country</th>
-              <th class="text-center">Status</th>
               <th class="text-center">Actions</th>
             </tr>
           </thead>
@@ -227,10 +226,6 @@ onMounted(() => {
                 }">{{ user.userType }}</span>
               </td>
               <td class="text-center">{{ user.country }}</td>
-              <td class="text-center">
-                 <span v-if="user.isActive" class="badge badge-success badge-xs">Active</span>
-                 <span v-else class="badge badge-error badge-xs">Inactive</span>
-              </td>
               <td class="text-center">
                 <div class="join">
                     <button class="btn btn-ghost btn-xs join-item" @click="openEditModal(user)">

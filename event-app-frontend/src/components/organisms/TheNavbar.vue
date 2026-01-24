@@ -26,6 +26,8 @@ const displayedLinks = computed(() => {
     return [
       { to: '/events', label: 'Events' },
       { to: '/user-management', label: 'User Management' },
+      { to: '/ticket-management', label: 'Ticket Management' },
+
     ]
   }
 
@@ -56,25 +58,11 @@ onMounted(() => {
     <div class="navbar-start">
       <div class="dropdown">
         <div tabindex="0" role="button" class="btn btn-ghost lg:hidden">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            class="h-5 w-5"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M4 6h16M4 12h8m-8 6h16"
-            />
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h8m-8 6h16" />
           </svg>
         </div>
-        <ul
-          tabindex="-1"
-          class="menu menu-sm dropdown-content bg-base-100 rounded-box z-1 mt-3 w-52 p-2 shadow"
-        >
+        <ul tabindex="-1" class="menu menu-sm dropdown-content bg-base-100 rounded-box z-1 mt-3 w-52 p-2 shadow">
           <li v-for="link in displayedLinks" :key="link.to">
             <RouterLink :to="link.to">{{ link.label }}</RouterLink>
           </li>
@@ -93,33 +81,30 @@ onMounted(() => {
       <div v-if="isLoggedIn" class="dropdown dropdown-end">
         <div tabindex="0" role="button" class="btn btn-ghost btn-circle avatar">
           <div class="w-10 rounded-full">
-            <img
-              v-if="userStore.imageId"
-              :src="getImageUrl(userStore.imageId)"
-              alt="User Profile"
-              class="object-cover w-full h-full"
-            />
-            <img
-              v-else
-              alt="Tailwind CSS Navbar component"
-              src="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp"
-            />
+            <img v-if="userStore.imageId" :src="getImageUrl(userStore.imageId)" alt="User Profile"
+              class="object-cover w-full h-full" />
+            <img v-else alt="Tailwind CSS Navbar component"
+              src="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp" />
           </div>
-          </div>
-        <ul
-          tabindex="-1"
-          class="menu menu-sm dropdown-content bg-base-100 rounded-box z-1 mt-3 w-52 p-2 shadow"
-        >
+        </div>
+        <ul tabindex="-1" class="menu menu-sm dropdown-content bg-base-100 rounded-box z-1 mt-3 w-52 p-2 shadow">
           <li>
             <RouterLink to="/profile" class="justify-between">
               Profile
               <span class="badge">Customize</span>
             </RouterLink>
           </li>
+          <li>
+            <RouterLink to="/my-tickets" class="justify-between">
+              My Tickets
+            </RouterLink>
+          </li>
           <li><a @click="logout">Logout</a></li>
         </ul>
       </div>
-      <RouterLink v-else to="/login"><LoginButton /></RouterLink>
+      <RouterLink v-else to="/login">
+        <LoginButton />
+      </RouterLink>
     </div>
   </div>
 </template>
