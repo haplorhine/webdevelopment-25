@@ -43,6 +43,8 @@ public class UserService {
         userCreationDto.setPassword(passwordEncoder.encode(userCreationDto.getPassword()));
         UserEntity userEntity = userMapper.toEntity(userCreationDto);
 
+        userEntity.setActive(true);
+
         if (userCreationDto.getImageId() != null) {
             ImageEntity image = imageRepository.findById(userCreationDto.getImageId())
                     .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Image not found"));
