@@ -66,7 +66,7 @@ class TicketControllerIT {
         ticket2.setPurchaseDate(LocalDateTime.now());
         ticket2.setStatus(TicketStatus.CANCELLED);
 
-        when(ticketService.getAllTickets()).thenReturn(java.util.Arrays.asList(ticket1, ticket2));
+        when(ticketService.getTickets()).thenReturn(java.util.Arrays.asList(ticket1, ticket2));
 
         // when
         ResultActions resultActions = mvc.perform(get("/tickets"));
