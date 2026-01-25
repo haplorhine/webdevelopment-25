@@ -49,8 +49,7 @@ public class TicketService {
         UserEntity user = userRepository.findById(ticketDto.getUserId())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
 
-        validateEventDates(event);
-        validateSalesDates(event);
+
         validateAvailability(event);
         validateActiveSales(event);
 
@@ -64,18 +63,6 @@ public class TicketService {
 
         TicketEntity savedEntity = ticketRepository.save(ticketEntity);
         return ticketMapper.toDto(savedEntity);
-    }
-
-    private void validateEventDates(EventEntity event) {
-        if (event.getEndDate().isBefore(event.getStartDate())) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Event End Date cannot be before Start Date.");
-        }
-    }
-
-    private void validateSalesDates(EventEntity event) {
-        if (event.getSalesEnd().isBefore(event.getSalesStart())) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Sales End Date cannot be before Sales Start Date.");
-        }
     }
 
     private void validateAvailability(EventEntity event) {
