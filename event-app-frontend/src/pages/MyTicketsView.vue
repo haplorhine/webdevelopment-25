@@ -1,16 +1,22 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { http } from '@/api/http'
+import { useUserStore } from '@/state/user'
 
 const tickets = ref([])
 const loading = ref(false)
 const error = ref('')
+const userStore = useUserStore()
 
 const fetchMyTickets = async () => {
   loading.value = true
   error.value = ''
   try {
-    const response = await http.get('/tickets') 
+    const userId = userStore.userId
+    if (!userId) {
+      throw new Error('User ID not found')
+    }
+    const response = await http.get(`/users/${userId}/tickets`)
     tickets.value = response.data
   } catch (err) {
     console.error(err)
@@ -27,7 +33,7 @@ const formatDate = (dateString) => {
     month: '2-digit',
     day: '2-digit',
     hour: '2-digit',
-    minute: '2-digit'
+    minute: '2-digit',
   })
 }
 
@@ -56,7 +62,7 @@ onMounted(() => {
               <th class="text-center">Event</th>
               <th class="text-center">Purchase Date</th>
               <th class="text-center">Status</th>
-              </tr>
+            </tr>
           </thead>
           <tbody>
             <tr v-for="ticket in tickets" :key="ticket.id" class="hover">
@@ -70,21 +76,26 @@ onMounted(() => {
                 {{ formatDate(ticket.purchaseDate) }}
               </td>
               <td class="text-center">
-                <span :class="{
-                  'badge badge-sm': true,
-                  'badge-success': ticket.status === 'ACTIVE',
-                  'badge-info': ticket.status === 'USED',
-                  'badge-error': ticket.status === 'CANCELLED'
-                }">{{ ticket.status }}</span>
+                <span
+                  :class="{
+                    'badge badge-sm': true,
+                    'badge-success': ticket.status === 'ACTIVE',
+                    'badge-info': ticket.status === 'USED',
+                    'badge-error': ticket.status === 'CANCELLED',
+                  }"
+                  >{{ ticket.status }}</span
+                >
               </td>
             </tr>
             <tr v-if="tickets.length === 0 && !loading">
-              <td colspan="4" class="text-center py-8 text-gray-500">You haven't bought any tickets yet.</td>
+              <td colspan="4" class="text-center py-8 text-gray-500">
+                You haven't bought any tickets yet.
+              </td>
             </tr>
           </tbody>
         </table>
       </div>
-      
+
       <div v-if="loading" class="flex justify-center mt-4">
         <span class="loading loading-spinner loading-lg"></span>
       </div>
