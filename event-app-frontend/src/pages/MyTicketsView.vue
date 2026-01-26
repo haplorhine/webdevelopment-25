@@ -2,11 +2,23 @@
 import { ref, onMounted } from 'vue'
 import { http } from '@/api/http'
 import { useUserStore } from '@/state/user'
+import MoleculePageHeader from '@/components/molecules/MoleculePageHeader.vue'
+import MoleculeDataTable from '@/components/molecules/MoleculeDataTable.vue'
+import AtomAlert from '@/components/atoms/AtomAlert.vue'
+import AtomBadge from '@/components/atoms/AtomBadge.vue'
+import AtomSpinner from '@/components/atoms/AtomSpinner.vue'
 
 const tickets = ref([])
 const loading = ref(false)
 const error = ref('')
 const userStore = useUserStore()
+
+const columns = [
+  { key: 'id', label: 'Ticket ID' },
+  { key: 'event', label: 'Event' },
+  { key: 'purchaseDate', label: 'Purchase Date' },
+  { key: 'status', label: 'Status' },
+]
 
 const fetchMyTickets = async () => {
   loading.value = true
@@ -45,60 +57,46 @@ onMounted(() => {
 <template>
   <div class="p-6 min-h-screen bg-base-200">
     <div class="max-w-7xl mx-auto">
-      <div class="flex justify-between items-center mb-6">
-        <h1 class="text-3xl font-bold">My Tickets</h1>
-        <button class="btn btn-primary btn-sm" @click="fetchMyTickets">Refresh</button>
-      </div>
+      <MoleculePageHeader title="My Tickets" @refresh="fetchMyTickets" />
 
-      <div v-if="error" class="alert alert-error mb-4 shadow-lg">
-        <span>{{ error }}</span>
-      </div>
+      <AtomAlert v-if="error" type="error" :message="error" />
 
-      <div class="overflow-x-auto bg-base-100 shadow-xl rounded-box">
-        <table class="table w-full">
-          <thead>
-            <tr>
-              <th class="text-center">Ticket ID</th>
-              <th class="text-center">Event</th>
-              <th class="text-center">Purchase Date</th>
-              <th class="text-center">Status</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr v-for="ticket in tickets" :key="ticket.id" class="hover">
-              <td class="text-center font-mono text-xs opacity-50">
-                {{ ticket.id.substring(0, 8) }}...
-              </td>
-              <td class="font-bold text-center">
-                {{ ticket.eventName || 'Unknown Event' }}
-              </td>
-              <td class="text-center">
-                {{ formatDate(ticket.purchaseDate) }}
-              </td>
-              <td class="text-center">
-                <span
-                  :class="{
-                    'badge badge-sm': true,
-                    'badge-success': ticket.status === 'ACTIVE',
-                    'badge-info': ticket.status === 'USED',
-                    'badge-error': ticket.status === 'CANCELLED',
-                  }"
-                  >{{ ticket.status }}</span
-                >
-              </td>
-            </tr>
-            <tr v-if="tickets.length === 0 && !loading">
-              <td colspan="4" class="text-center py-8 text-gray-500">
-                You haven't bought any tickets yet.
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
+      <MoleculeDataTable
+        :columns="columns"
+        :items="tickets"
+        :loading="loading"
+        empty-message="You haven't bought any tickets yet."
+      >
+        <template #rows="{ items }">
+          <tr v-for="ticket in items" :key="ticket.id" class="hover">
+            <td class="text-center font-mono text-xs opacity-50">
+              {{ ticket.id.substring(0, 8) }}...
+            </td>
+            <td class="font-bold text-center">
+              {{ ticket.eventName || 'Unknown Event' }}
+            </td>
+            <td class="text-center">
+              {{ formatDate(ticket.purchaseDate) }}
+            </td>
+            <td class="text-center">
+              <AtomBadge
+                :variant="
+                  ticket.status === 'ACTIVE'
+                    ? 'success'
+                    : ticket.status === 'USED'
+                      ? 'info'
+                      : 'error'
+                "
+                size="sm"
+              >
+                {{ ticket.status }}
+              </AtomBadge>
+            </td>
+          </tr>
+        </template>
+      </MoleculeDataTable>
 
-      <div v-if="loading" class="flex justify-center mt-4">
-        <span class="loading loading-spinner loading-lg"></span>
-      </div>
+      <AtomSpinner v-if="loading" class="mt-4" />
     </div>
   </div>
 </template>
