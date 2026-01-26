@@ -9,6 +9,7 @@ import MoleculePageHeader from '@/components/molecules/MoleculePageHeader.vue'
 import MoleculeDataTable from '@/components/molecules/MoleculeDataTable.vue'
 import MoleculeConfirmModal from '@/components/molecules/MoleculeConfirmModal.vue'
 import AtomButton from '@/components/atoms/AtomButton.vue'
+import MoleculeJoinActions from '@/components/molecules/MoleculeJoinActions.vue'
 import AtomAlert from '@/components/atoms/AtomAlert.vue'
 import AtomBadge from '@/components/atoms/AtomBadge.vue'
 import AtomSpinner from '@/components/atoms/AtomSpinner.vue'
@@ -318,17 +319,7 @@ onMounted(() => {
               {{ event.ticketPrice ? event.ticketPrice.toFixed(2) + ' €' : 'Free' }}
             </td>
             <td class="text-center">
-              <div class="join">
-                <button class="btn btn-ghost btn-xs join-item" @click="openEditModal(event)">
-                  Edit
-                </button>
-                <button
-                  class="btn btn-ghost btn-xs text-error join-item"
-                  @click="promptDelete(event)"
-                >
-                  Delete
-                </button>
-              </div>
+              <MoleculeJoinActions :item="event" @edit="openEditModal" @delete="promptDelete" />
             </td>
           </tr>
         </template>
