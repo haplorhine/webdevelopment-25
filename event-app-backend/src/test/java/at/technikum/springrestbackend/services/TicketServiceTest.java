@@ -105,29 +105,35 @@ class TicketServiceTest {
     }
 
     @Test
-    void createTicket_whenEventDatesInvalid_throwsBadRequest() {
-        event.setEndDate(event.getStartDate().minusDays(1));
+    void createTicket_whenSalesNotStartedYet_throwsBadRequest() {
+        LocalDateTime now = LocalDateTime.now();
+        event.setSalesStart(now.plusDays(1));
+        event.setSalesEnd(now.plusDays(2));
         when(eventRepository.findById(eventId)).thenReturn(Optional.of(event));
         when(userRepository.findById(userId)).thenReturn(Optional.of(user));
 
         assertThatThrownBy(() -> ticketService.createTicket(ticketDto))
                 .isInstanceOf(ResponseStatusException.class)
-                .hasMessageContaining("Event End Date")
+                .hasMessageContaining("not active")
                 .extracting(ex -> ((ResponseStatusException) ex).getStatusCode())
                 .isEqualTo(HttpStatus.BAD_REQUEST);
+        verify(ticketMapper, never()).toEntity(ticketDto);
     }
 
     @Test
-    void createTicket_whenSalesDatesInvalid_throwsBadRequest() {
-        event.setSalesEnd(event.getSalesStart().minusDays(1));
+    void createTicket_whenSalesAlreadyEnded_throwsBadRequest() {
+        LocalDateTime now = LocalDateTime.now();
+        event.setSalesStart(now.minusDays(2));
+        event.setSalesEnd(now.minusDays(1));
         when(eventRepository.findById(eventId)).thenReturn(Optional.of(event));
         when(userRepository.findById(userId)).thenReturn(Optional.of(user));
 
         assertThatThrownBy(() -> ticketService.createTicket(ticketDto))
                 .isInstanceOf(ResponseStatusException.class)
-                .hasMessageContaining("Sales End Date")
+                .hasMessageContaining("not active")
                 .extracting(ex -> ((ResponseStatusException) ex).getStatusCode())
                 .isEqualTo(HttpStatus.BAD_REQUEST);
+        verify(ticketMapper, never()).toEntity(ticketDto);
     }
 
     @Test
@@ -142,21 +148,7 @@ class TicketServiceTest {
                 .hasMessageContaining("sold out")
                 .extracting(ex -> ((ResponseStatusException) ex).getStatusCode())
                 .isEqualTo(HttpStatus.BAD_REQUEST);
-    }
-
-    @Test
-    void createTicket_whenSalesInactive_throwsBadRequest() {
-        LocalDateTime now = LocalDateTime.now();
-        event.setSalesStart(now.plusDays(1));
-        event.setSalesEnd(now.plusDays(2));
-        when(eventRepository.findById(eventId)).thenReturn(Optional.of(event));
-        when(userRepository.findById(userId)).thenReturn(Optional.of(user));
-
-        assertThatThrownBy(() -> ticketService.createTicket(ticketDto))
-                .isInstanceOf(ResponseStatusException.class)
-                .hasMessageContaining("not active")
-                .extracting(ex -> ((ResponseStatusException) ex).getStatusCode())
-                .isEqualTo(HttpStatus.BAD_REQUEST);
+        verify(ticketMapper, never()).toEntity(ticketDto);
     }
 
     @Test
