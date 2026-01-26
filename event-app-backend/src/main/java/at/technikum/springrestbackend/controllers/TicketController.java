@@ -36,15 +36,8 @@ public class TicketController {
     }
 
     @PostMapping("/tickets")
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("hasPermission(#ticketDto.userId, T(at.technikum.springrestbackend.entity.TicketEntity).getName(), 'create')")
     public TicketDto createTicket(@RequestBody @Valid TicketDto ticketDto) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication == null || !(authentication.getPrincipal() instanceof UserPrincipal userPrincipal)) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "No user context");
-        }
-        if (!userPrincipal.getId().equals(ticketDto.getUserId())) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Forbidden");
-        }
         return ticketService.createTicket(ticketDto);
     }
 
