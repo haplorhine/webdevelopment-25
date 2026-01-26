@@ -8,6 +8,7 @@ import MoleculeFieldset from '@/components/molecules/MoleculeFieldset.vue'
 import MoleculePageHeader from '@/components/molecules/MoleculePageHeader.vue'
 import MoleculeDataTable from '@/components/molecules/MoleculeDataTable.vue'
 import MoleculeConfirmModal from '@/components/molecules/MoleculeConfirmModal.vue'
+import EditModal from '@/components/organisms/EditModal.vue'
 import AtomButton from '@/components/atoms/AtomButton.vue'
 import MoleculeJoinActions from '@/components/molecules/MoleculeJoinActions.vue'
 import AtomAlert from '@/components/atoms/AtomAlert.vue'
@@ -328,209 +329,198 @@ onMounted(() => {
       <AtomSpinner v-if="loading" class="mt-4" />
     </div>
 
-    <dialog class="modal" :class="{ 'modal-open': showEditModal }">
-      <div class="modal-box max-w-2xl">
-        <h3 class="font-bold text-lg mb-4">Edit Event</h3>
-
-        <div v-if="successMessage" class="alert alert-success text-sm mb-4">
-          <span>{{ successMessage }}</span>
-        </div>
-        <div v-if="errorMessage" class="alert alert-error text-sm mb-4">
-          <span>{{ errorMessage }}</span>
-        </div>
-
-        <form @submit.prevent="saveEvent">
-          <MoleculeFieldset>
-            <div class="flex flex-col items-center gap-4 mb-6">
-              <div class="avatar">
-                <div class="w-32 rounded-lg ring ring-primary ring-offset-base-100 ring-offset-2">
-                  <img v-if="form.imageId" :src="getImageUrl(form.imageId)" />
-                  <div
-                    v-else
-                    class="bg-gray-200 w-full h-full flex items-center justify-center font-bold text-4xl"
-                  >
-                    📸
-                  </div>
-                </div>
-              </div>
-              <input
-                type="file"
-                class="file-input file-input-bordered file-input-sm w-full max-w-xs"
-                accept="image/*"
-                @change="handleFileChange"
-              />
-            </div>
-
-            <div>
-              <LabeledInput
-                v-model="form.title"
-                type="text"
-                :input-class="['w-full', { 'input-error': errors.title }]"
-                placeholder="Event Title"
-                label="Title"
-                id="edit-title"
-                name="title"
-              />
-              <span v-if="errors.title" class="text-error text-xs mt-1 ml-1">{{
-                errors.title
-              }}</span>
-            </div>
-
-            <div class="form-control w-full">
-              <label class="label"><span class="label-text font-semibold">Category</span></label>
-              <select
-                v-model="form.category"
-                :class="['select select-bordered w-full', { 'select-error': errors.category }]"
+    <EditModal
+      :show="showEditModal"
+      title="Edit Event"
+      :success-message="successMessage"
+      :error-message="errorMessage"
+      :disabled="updating"
+      max-width="max-w-2xl"
+      @submit="saveEvent"
+      @close="showEditModal = false"
+    >
+      <MoleculeFieldset>
+        <div class="flex flex-col items-center gap-4 mb-6">
+          <div class="avatar">
+            <div class="w-32 rounded-lg ring ring-primary ring-offset-base-100 ring-offset-2">
+              <img v-if="form.imageId" :src="getImageUrl(form.imageId)" />
+              <div
+                v-else
+                class="bg-gray-200 w-full h-full flex items-center justify-center font-bold text-4xl"
               >
-                <option v-for="cat in categories" :key="cat" :value="cat">
-                  {{ cat.replace('_', ' ') }}
-                </option>
-              </select>
-              <span v-if="errors.category" class="text-error text-xs mt-1">{{
-                errors.category
-              }}</span>
-            </div>
-
-            <div>
-              <LabeledInput
-                v-model="form.description"
-                type="text"
-                :input-class="['w-full', { 'input-error': errors.description }]"
-                placeholder="Description"
-                label="Description"
-                id="edit-description"
-                name="description"
-              />
-              <span v-if="errors.description" class="text-error text-xs mt-1 ml-1">{{
-                errors.description
-              }}</span>
-            </div>
-
-            <div>
-              <LabeledInput
-                v-model="form.location"
-                type="text"
-                :input-class="['w-full', { 'input-error': errors.location }]"
-                placeholder="Location"
-                label="Location"
-                id="edit-location"
-                name="location"
-              />
-              <span v-if="errors.location" class="text-error text-xs mt-1 ml-1">{{
-                errors.location
-              }}</span>
-            </div>
-
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <LabeledInput
-                  v-model="form.salesStart"
-                  type="datetime-local"
-                  :input-class="['w-full', { 'input-error': errors.salesStart }]"
-                  label="Sales Start"
-                  id="edit-salesStart"
-                  name="salesStart"
-                />
-                <span v-if="errors.salesStart" class="text-error text-xs mt-1 ml-1">{{
-                  errors.salesStart
-                }}</span>
-              </div>
-              <div>
-                <LabeledInput
-                  v-model="form.salesEnd"
-                  type="datetime-local"
-                  :input-class="['w-full', { 'input-error': errors.salesEnd }]"
-                  label="Sales End"
-                  id="edit-salesEnd"
-                  name="salesEnd"
-                />
-                <span v-if="errors.salesEnd" class="text-error text-xs mt-1 ml-1">{{
-                  errors.salesEnd
-                }}</span>
+                📸
               </div>
             </div>
+          </div>
+          <input
+            type="file"
+            class="file-input file-input-bordered file-input-sm w-full max-w-xs"
+            accept="image/*"
+            @change="handleFileChange"
+          />
+        </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <LabeledInput
-                  v-model="form.startDate"
-                  type="datetime-local"
-                  :input-class="['w-full', { 'input-error': errors.startDate }]"
-                  label="Event Start"
-                  id="edit-startDate"
-                  name="startDate"
-                />
-                <span v-if="errors.startDate" class="text-error text-xs mt-1 ml-1">{{
-                  errors.startDate
-                }}</span>
-              </div>
-              <div>
-                <LabeledInput
-                  v-model="form.endDate"
-                  type="datetime-local"
-                  :input-class="['w-full', { 'input-error': errors.endDate }]"
-                  label="Event End"
-                  id="edit-endDate"
-                  name="endDate"
-                />
-                <span v-if="errors.endDate" class="text-error text-xs mt-1 ml-1">{{
-                  errors.endDate
-                }}</span>
-              </div>
-            </div>
+        <div>
+          <LabeledInput
+            v-model="form.title"
+            type="text"
+            :input-class="['w-full', { 'input-error': errors.title }]"
+            placeholder="Event Title"
+            label="Title"
+            id="edit-title"
+            name="title"
+          />
+          <span v-if="errors.title" class="text-error text-xs mt-1 ml-1">{{ errors.title }}</span>
+        </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <LabeledInput
-                  v-model="form.maxParticipants"
-                  type="number"
-                  :input-class="['w-full', { 'input-error': errors.maxParticipants }]"
-                  placeholder="Max Participants"
-                  label="Max Participants"
-                  id="edit-maxParticipants"
-                  name="maxParticipants"
-                  min="1"
-                />
-                <span v-if="errors.maxParticipants" class="text-error text-xs mt-1 ml-1">{{
-                  errors.maxParticipants
-                }}</span>
-              </div>
-              <div>
-                <LabeledInput
-                  v-model="form.ticketPrice"
-                  type="number"
-                  :input-class="['w-full', { 'input-error': errors.ticketPrice }]"
-                  placeholder="Ticket Price"
-                  label="Ticket Price (€)"
-                  id="edit-ticketPrice"
-                  name="ticketPrice"
-                  min="0"
-                  step="0.01"
-                />
-                <span v-if="errors.ticketPrice" class="text-error text-xs mt-1 ml-1">{{
-                  errors.ticketPrice
-                }}</span>
-              </div>
-            </div>
+        <div class="form-control w-full">
+          <label class="label"><span class="label-text font-semibold">Category</span></label>
+          <select
+            v-model="form.category"
+            :class="['select select-bordered w-full', { 'select-error': errors.category }]"
+          >
+            <option v-for="cat in categories" :key="cat" :value="cat">
+              {{ cat.replace('_', ' ') }}
+            </option>
+          </select>
+          <span v-if="errors.category" class="text-error text-xs mt-1">{{ errors.category }}</span>
+        </div>
 
-            <div class="modal-action">
-              <button type="button" class="btn" @click="showEditModal = false" :disabled="updating">
-                Cancel
-              </button>
-              <AtomButton
-                class="btn-primary"
-                :label="updating ? 'Saving...' : 'Save Changes'"
-                type="submit"
-                :disabled="updating"
-              />
-            </div>
-          </MoleculeFieldset>
-        </form>
-      </div>
-      <form method="dialog" class="modal-backdrop">
-        <button @click="showEditModal = false" :disabled="updating">close</button>
-      </form>
-    </dialog>
+        <div>
+          <LabeledInput
+            v-model="form.description"
+            type="text"
+            :input-class="['w-full', { 'input-error': errors.description }]"
+            placeholder="Description"
+            label="Description"
+            id="edit-description"
+            name="description"
+          />
+          <span v-if="errors.description" class="text-error text-xs mt-1 ml-1">{{
+            errors.description
+          }}</span>
+        </div>
+
+        <div>
+          <LabeledInput
+            v-model="form.location"
+            type="text"
+            :input-class="['w-full', { 'input-error': errors.location }]"
+            placeholder="Location"
+            label="Location"
+            id="edit-location"
+            name="location"
+          />
+          <span v-if="errors.location" class="text-error text-xs mt-1 ml-1">{{
+            errors.location
+          }}</span>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <LabeledInput
+              v-model="form.salesStart"
+              type="datetime-local"
+              :input-class="['w-full', { 'input-error': errors.salesStart }]"
+              label="Sales Start"
+              id="edit-salesStart"
+              name="salesStart"
+            />
+            <span v-if="errors.salesStart" class="text-error text-xs mt-1 ml-1">{{
+              errors.salesStart
+            }}</span>
+          </div>
+          <div>
+            <LabeledInput
+              v-model="form.salesEnd"
+              type="datetime-local"
+              :input-class="['w-full', { 'input-error': errors.salesEnd }]"
+              label="Sales End"
+              id="edit-salesEnd"
+              name="salesEnd"
+            />
+            <span v-if="errors.salesEnd" class="text-error text-xs mt-1 ml-1">{{
+              errors.salesEnd
+            }}</span>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <LabeledInput
+              v-model="form.startDate"
+              type="datetime-local"
+              :input-class="['w-full', { 'input-error': errors.startDate }]"
+              label="Event Start"
+              id="edit-startDate"
+              name="startDate"
+            />
+            <span v-if="errors.startDate" class="text-error text-xs mt-1 ml-1">{{
+              errors.startDate
+            }}</span>
+          </div>
+          <div>
+            <LabeledInput
+              v-model="form.endDate"
+              type="datetime-local"
+              :input-class="['w-full', { 'input-error': errors.endDate }]"
+              label="Event End"
+              id="edit-endDate"
+              name="endDate"
+            />
+            <span v-if="errors.endDate" class="text-error text-xs mt-1 ml-1">{{
+              errors.endDate
+            }}</span>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <LabeledInput
+              v-model="form.maxParticipants"
+              type="number"
+              :input-class="['w-full', { 'input-error': errors.maxParticipants }]"
+              placeholder="Max Participants"
+              label="Max Participants"
+              id="edit-maxParticipants"
+              name="maxParticipants"
+              min="1"
+            />
+            <span v-if="errors.maxParticipants" class="text-error text-xs mt-1 ml-1">{{
+              errors.maxParticipants
+            }}</span>
+          </div>
+          <div>
+            <LabeledInput
+              v-model="form.ticketPrice"
+              type="number"
+              :input-class="['w-full', { 'input-error': errors.ticketPrice }]"
+              placeholder="Ticket Price"
+              label="Ticket Price (€)"
+              id="edit-ticketPrice"
+              name="ticketPrice"
+              min="0"
+              step="0.01"
+            />
+            <span v-if="errors.ticketPrice" class="text-error text-xs mt-1 ml-1">{{
+              errors.ticketPrice
+            }}</span>
+          </div>
+        </div>
+
+        <div class="modal-action">
+          <button type="button" class="btn" @click="showEditModal = false" :disabled="updating">
+            Cancel
+          </button>
+          <AtomButton
+            class="btn-primary"
+            :label="updating ? 'Saving...' : 'Save Changes'"
+            type="submit"
+            :disabled="updating"
+          />
+        </div>
+      </MoleculeFieldset>
+    </EditModal>
 
     <MoleculeConfirmModal
       :show="showDeleteModal"
