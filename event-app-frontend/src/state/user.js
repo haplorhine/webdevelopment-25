@@ -20,6 +20,7 @@ export const useUserStore = defineStore('user', {
     role: (state) => state.data.role,
     imageId: (state) => state.data.imageId,
     isAdmin: (state) => state.data.role === 'ADMIN',
+    isHost: (state) => state.data.role === 'HOST',
   },
   actions: {
     async setToken(token) {
@@ -31,15 +32,14 @@ export const useUserStore = defineStore('user', {
         this.data.id = decoded.sub
         this.data.username = decoded.username || null
         this.data.role = decoded.role || null
-        
-        await this.fetchProfile()
 
+        await this.fetchProfile()
       } catch {
         this.data = { id: null, username: null, role: null, imageId: null }
         this.error = 'Invalid token'
       }
     },
-        async fetchProfile() {
+    async fetchProfile() {
       if (!this.data.id) return
       try {
         const response = await http.get(`/users/${this.data.id}`)
