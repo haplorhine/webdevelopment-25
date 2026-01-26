@@ -14,6 +14,7 @@ const CreateEventView = () => import('@/pages/CreateEventView.vue')
 const EventDetailView = () => import('@/pages/EventDetailView.vue')
 const UserManagementView = () => import('@/pages/UserManagementView.vue')
 const TicketManagementView = () => import('@/pages/TicketManagementView.vue')
+const EventManagementView = () => import('@/pages/EventManagementView.vue')
 const ForgotPasswordView = () => import('@/pages/ForgotPasswordView.vue')
 const ProfileView = () => import('@/pages/ProfileView.vue')
 const MyTicketsView = () => import('@/pages/MyTicketsView.vue')
@@ -29,17 +30,15 @@ const routes = [
   { path: '/login', component: LoginView },
   { path: '/register', component: RegisterView },
   { path: '/forgot-password', component: ForgotPasswordView },
-  { path: '/profile', component: ProfileView },  
-  { path: '/my-tickets', component: MyTicketsView},
-  { path: '/user-management',
-    component: UserManagementView,
-  meta: {requiresAdmin: true}
-},
-  { path: '/ticket-management',
-    component: TicketManagementView,
-  meta: {requiresAdmin: true}
-},
-
+  { path: '/profile', component: ProfileView },
+  { path: '/my-tickets', component: MyTicketsView },
+  { path: '/user-management', component: UserManagementView, meta: { requiresAdmin: true } },
+  { path: '/ticket-management', component: TicketManagementView, meta: { requiresAdmin: true } },
+  {
+    path: '/event-management',
+    component: EventManagementView,
+    meta: { requiresAdminOrHost: true },
+  },
 ]
 
 const router = createRouter({
@@ -52,11 +51,16 @@ router.beforeEach((to, from, next) => {
 
   if (to.meta.requiresAdmin) {
     if (!userStore.isAdmin) {
-      return next('/') 
+      return next('/')
+    }
+  }
+
+  if (to.meta.requiresAdminOrHost) {
+    if (!(userStore.isAdmin || userStore.isHost)) {
+      return next('/')
     }
   }
   next()
 })
-
 
 export default router
