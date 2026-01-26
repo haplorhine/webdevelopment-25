@@ -2,10 +2,15 @@ package at.technikum.springrestbackend.controllers;
 
 import at.technikum.springrestbackend.dto.EventDto;
 import at.technikum.springrestbackend.services.EventService;
+import at.technikum.springrestbackend.security.UserPrincipal;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 import java.util.UUID;
@@ -26,6 +31,13 @@ public class EventController {
     @PostMapping("/events")
     @PreAuthorize("hasAuthority('HOST')")
     public EventDto createEvent(@RequestBody @Valid EventDto eventDto) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null || !(authentication.getPrincipal() instanceof UserPrincipal userPrincipal)) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "No user context");
+        }
+        if (!userPrincipal.getId().equals(eventDto.getHostId())) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Forbidden");
+        }
         return eventService.createEvent(eventDto);
     }
 

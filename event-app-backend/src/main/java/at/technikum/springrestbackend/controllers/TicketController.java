@@ -12,6 +12,12 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import at.technikum.springrestbackend.security.UserPrincipal;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.server.ResponseStatusException;
+
 import java.util.List;
 
 @RestController
@@ -32,6 +38,13 @@ public class TicketController {
     @PostMapping("/tickets")
     @PreAuthorize("isAuthenticated()")
     public TicketDto createTicket(@RequestBody @Valid TicketDto ticketDto) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null || !(authentication.getPrincipal() instanceof UserPrincipal userPrincipal)) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "No user context");
+        }
+        if (!userPrincipal.getId().equals(ticketDto.getUserId())) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Forbidden");
+        }
         return ticketService.createTicket(ticketDto);
     }
 
