@@ -3,7 +3,6 @@ services:
     image: mariadb:11.1
     container_name: bweng-backend
     environment:
-      MARIADB_ROOT_PASSWORD: root_password
       MARIADB_DATABASE: spring
       MARIADB_USER: db_user
       MARIADB_PASSWORD: db_password
