@@ -21,6 +21,10 @@ public class TicketDto {
 
     private UUID userId;
 
+    private String eventName;
+
+    private String userName;
+
     @NotNull
     private LocalDateTime purchaseDate;
 

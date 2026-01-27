@@ -3,6 +3,7 @@ package at.technikum.springrestbackend.controllers;
 import at.technikum.springrestbackend.dto.TicketDto;
 import at.technikum.springrestbackend.services.TicketService;
 import jakarta.validation.Valid;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -30,15 +31,9 @@ public class TicketController {
     }
 
     @PostMapping("/tickets")
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("hasPermission(#ticketDto.userId, T(at.technikum.springrestbackend.entity.TicketEntity).getName(), 'create')")
     public TicketDto createTicket(@RequestBody @Valid TicketDto ticketDto) {
         return ticketService.createTicket(ticketDto);
-    }
-
-    @GetMapping("/tickets/{id}")
-    @PreAuthorize("hasAuthority('ADMIN') or hasPermission(#id, T(at.technikum.springrestbackend.entity.TicketEntity).getName(), 'read')")
-    public TicketDto getTicketById(@PathVariable java.util.UUID id) {
-        return ticketService.getTicketById(id);
     }
 
     @PutMapping("/tickets/{id}")
@@ -48,9 +43,9 @@ public class TicketController {
     }
 
     @DeleteMapping("/tickets/{id}")
-    @PreAuthorize("hasAuthority('ADMIN') or hasPermission(#id, T(at.technikum.springrestbackend.entity.TicketEntity).getName(), 'delete')")
-    public org.springframework.http.ResponseEntity<Void> deleteTicket(@PathVariable java.util.UUID id) {
+    @PreAuthorize("hasAuthority('ADMIN')")
+    public ResponseEntity<Void> deleteTicket(@PathVariable java.util.UUID id) {
         ticketService.deleteTicketById(id);
-        return org.springframework.http.ResponseEntity.noContent().build();
+        return ResponseEntity.noContent().build();
     }
 }

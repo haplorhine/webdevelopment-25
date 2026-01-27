@@ -4,11 +4,27 @@ import * as yup from 'yup'
 import { http } from '@/api/http'
 import LabeledInput from '@/components/molecules/LabeledInput.vue'
 import MoleculeFieldset from '@/components/molecules/MoleculeFieldset.vue'
+import MoleculePageHeader from '@/components/molecules/MoleculePageHeader.vue'
+import MoleculeDataTable from '@/components/molecules/MoleculeDataTable.vue'
+import MoleculeConfirmModal from '@/components/molecules/MoleculeConfirmModal.vue'
+import EditModal from '@/components/organisms/EditModal.vue'
 import AtomButton from '@/components/atoms/AtomButton.vue'
+import MoleculeJoinActions from '@/components/molecules/MoleculeJoinActions.vue'
+import AtomAlert from '@/components/atoms/AtomAlert.vue'
+import AtomBadge from '@/components/atoms/AtomBadge.vue'
+import AtomSpinner from '@/components/atoms/AtomSpinner.vue'
 
 const users = ref([])
 const loading = ref(false)
 const error = ref('')
+
+const columns = [
+  { key: 'avatar', label: 'Avatar' },
+  { key: 'user', label: 'User' },
+  { key: 'role', label: 'Role' },
+  { key: 'country', label: 'Country' },
+  { key: 'actions', label: 'Actions' },
+]
 
 // --- STATES ---
 const showEditModal = ref(false)
@@ -17,7 +33,7 @@ const showDeleteModal = ref(false)
 const updating = ref(false)
 const successMessage = ref('')
 const errorMessage = ref('')
-const errors = reactive({}) 
+const errors = reactive({})
 
 const userToDelete = ref(null)
 
@@ -43,8 +59,8 @@ const form = reactive({
   username: '',
   country: '',
   userType: 'USER',
-  isActive: true, 
-  imageId: null
+  isActive: true,
+  imageId: null,
 })
 
 const userTypes = ['USER', 'HOST', 'ADMIN']
@@ -85,10 +101,10 @@ const promptDelete = (user) => {
 
 const confirmDelete = async () => {
   if (!userToDelete.value) return
-  
+
   try {
     await http.delete(`/users/${userToDelete.value.id}`)
-    users.value = users.value.filter(u => u.id !== userToDelete.value.id)
+    users.value = users.value.filter((u) => u.id !== userToDelete.value.id)
     showDeleteModal.value = false
     userToDelete.value = null
   } catch (err) {
@@ -100,23 +116,23 @@ const confirmDelete = async () => {
 const openEditModal = (user) => {
   successMessage.value = ''
   errorMessage.value = ''
-  Object.keys(errors).forEach(key => delete errors[key])
+  Object.keys(errors).forEach((key) => delete errors[key])
   imageFile.value = null
-  
+
   form.id = user.id
   form.email = user.email
   form.username = user.username
   form.country = user.country
   form.userType = user.userType
   form.imageId = user.imageId
-  form.isActive = user.isActive 
+  form.isActive = user.isActive
 
   if (['MR', 'MS'].includes(user.salutation)) {
-      form.salutation = user.salutation.toLowerCase()
-      form.salutationOther = ''
+    form.salutation = user.salutation.toLowerCase()
+    form.salutationOther = ''
   } else {
-      form.salutation = 'other'
-      form.salutationOther = user.salutation === 'OTHER' ? '' : user.salutation
+    form.salutation = 'other'
+    form.salutationOther = user.salutation === 'OTHER' ? '' : user.salutation
   }
 
   showEditModal.value = true
@@ -126,7 +142,7 @@ const saveUser = async () => {
   updating.value = true
   errorMessage.value = ''
   successMessage.value = ''
-  Object.keys(errors).forEach(key => delete errors[key])
+  Object.keys(errors).forEach((key) => delete errors[key])
 
   try {
     await schema.validate(form, { abortEarly: false })
@@ -147,24 +163,23 @@ const saveUser = async () => {
       country: form.country,
       userType: form.userType,
       imageId: form.imageId,
-      isActive: form.isActive 
+      isActive: form.isActive,
     }
 
     payload.salutation = form.salutation.toUpperCase()
 
     await http.put(`/users/${form.id}`, payload)
-    
+
     successMessage.value = 'Changes saved successfully!'
     await fetchUsers()
-    
-    setTimeout(() => {
-        showEditModal.value = false
-    }, 1500)
 
+    setTimeout(() => {
+      showEditModal.value = false
+    }, 1500)
   } catch (err) {
     console.error(err)
     if (err.inner) {
-      err.inner.forEach(e => {
+      err.inner.forEach((e) => {
         errors[e.path] = e.message
       })
     } else {
@@ -183,211 +198,193 @@ onMounted(() => {
 <template>
   <div class="p-6 min-h-screen bg-base-200">
     <div class="max-w-7xl mx-auto">
-      <div class="flex justify-between items-center mb-6">
-        <h1 class="text-3xl font-bold">User Management</h1>
-        <button class="btn btn-primary btn-sm" @click="fetchUsers">Refresh</button>
-      </div>
+      <MoleculePageHeader title="User Management" @refresh="fetchUsers" />
 
-      <div v-if="error" class="alert alert-error mb-4 shadow-lg">
-        <span>{{ error }}</span>
-      </div>
+      <AtomAlert v-if="error" type="error" :message="error" />
 
-      <div class="overflow-x-auto bg-base-100 shadow-xl rounded-box">
-        <table class="table w-full">
-          <thead>
-            <tr>
-              <th class="text-center">Avatar</th>
-              <th class="text-center">User</th>
-              <th class="text-center">Role</th>
-              <th class="text-center">Country</th>
-              <th class="text-center">Status</th>
-              <th class="text-center">Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr v-for="user in users" :key="user.id" class="hover">
-              <td class="text-center">
-                <div class="avatar placeholder">
-                  <div class="w-10 rounded-full bg-neutral-focus text-neutral-content ring ring-primary ring-offset-base-100 ring-offset-2">
-                    <img v-if="user.imageId" :src="getImageUrl(user.imageId)" />
-                    <span v-else class="text-xs">{{ user.username?.substring(0,2).toUpperCase() }}</span>
-                  </div>
+      <MoleculeDataTable
+        :columns="columns"
+        :items="users"
+        :loading="loading"
+        empty-message="No users found."
+      >
+        <template #rows="{ items }">
+          <tr v-for="user in items" :key="user.id" class="hover">
+            <td class="text-center">
+              <div class="avatar placeholder">
+                <div
+                  class="w-10 rounded-full bg-neutral-focus text-neutral-content ring ring-primary ring-offset-base-100 ring-offset-2"
+                >
+                  <img v-if="user.imageId" :src="getImageUrl(user.imageId)" />
+                  <span v-else class="text-xs">{{
+                    user.username?.substring(0, 2).toUpperCase()
+                  }}</span>
                 </div>
-              </td>
-              <td class="text-center">
-                <div class="font-bold">{{ user.username }}</div>
-                <div class="text-xs opacity-50">{{ user.email }}</div>
-              </td>
-              <td class="text-center">
-                <span :class="{
-                  'badge badge-sm': true,
-                  'badge-primary': user.userType === 'ADMIN',
-                  'badge-secondary': user.userType === 'HOST',
-                  'badge-ghost': user.userType === 'USER'
-                }">{{ user.userType }}</span>
-              </td>
-              <td class="text-center">{{ user.country }}</td>
-              <td class="text-center">
-                 <span v-if="user.isActive" class="badge badge-success badge-xs">Active</span>
-                 <span v-else class="badge badge-error badge-xs">Inactive</span>
-              </td>
-              <td class="text-center">
-                <div class="join">
-                    <button class="btn btn-ghost btn-xs join-item" @click="openEditModal(user)">
-                    Edit
-                    </button>
-                    <button class="btn btn-ghost btn-xs text-error join-item" @click="promptDelete(user)">
-                    Delete
-                    </button>
-                </div>
-              </td>
-            </tr>
-            <tr v-if="users.length === 0 && !loading">
-              <td colspan="6" class="text-center py-8 text-gray-500">No users found.</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-      
-      <div v-if="loading" class="flex justify-center mt-4">
-        <span class="loading loading-spinner loading-lg"></span>
-      </div>
+              </div>
+            </td>
+            <td class="text-center">
+              <div class="font-bold">{{ user.username }}</div>
+              <div class="text-xs opacity-50">{{ user.email }}</div>
+            </td>
+            <td class="text-center">
+              <AtomBadge
+                :variant="
+                  user.userType === 'ADMIN'
+                    ? 'primary'
+                    : user.userType === 'HOST'
+                      ? 'secondary'
+                      : 'ghost'
+                "
+                size="sm"
+              >
+                {{ user.userType }}
+              </AtomBadge>
+            </td>
+            <td class="text-center">{{ user.country }}</td>
+            <td class="text-center">
+              <MoleculeJoinActions :item="user" @edit="openEditModal" @delete="promptDelete" />
+            </td>
+          </tr>
+        </template>
+      </MoleculeDataTable>
+
+      <AtomSpinner v-if="loading" class="mt-4" />
     </div>
 
-    <dialog class="modal" :class="{ 'modal-open': showEditModal }">
-      <div class="modal-box">
-        <h3 class="font-bold text-lg mb-4">Edit User</h3>
-        
-        <div v-if="successMessage" class="alert alert-success text-sm mb-4">
-            <span>{{ successMessage }}</span>
-        </div>
-        <div v-if="errorMessage" class="alert alert-error text-sm mb-4">
-            <span>{{ errorMessage }}</span>
-        </div>
-        
-        <form @submit.prevent="saveUser">
-          <MoleculeFieldset>
-            
-            <div class="flex flex-col items-center gap-4 mb-6">
-                <div class="avatar">
-                    <div class="w-20 rounded-full ring ring-primary ring-offset-base-100 ring-offset-2">
-                        <img v-if="form.imageId" :src="getImageUrl(form.imageId)" />
-                        <div v-else class="bg-gray-200 w-full h-full flex items-center justify-center font-bold text-xl">
-                            {{ form.username?.charAt(0).toUpperCase() }}
-                        </div>
-                    </div>
-                </div>
-                <input type="file" class="file-input file-input-bordered file-input-xs w-full max-w-xs" accept="image/*" @change="handleFileChange" />
-            </div>
-
-            <div class="form-control w-full mb-2 p-2 bg-base-200 rounded-lg">
-                <label class="cursor-pointer label justify-between">
-                    <span class="label-text font-bold">Account Active?</span> 
-                    <input type="checkbox" v-model="form.isActive" class="checkbox checkbox-success" />
-                </label>
-            </div>
-
-            <div class="form-control w-full">
-              <label class="label"><span class="label-text font-semibold">Salutation</span></label>
-              <select 
-                v-model="form.salutation" 
-                :class="['select select-bordered w-full', {'select-error': errors.salutation}]"
+    <EditModal
+      :show="showEditModal"
+      title="Edit User"
+      :success-message="successMessage"
+      :error-message="errorMessage"
+      :disabled="updating"
+      @submit="saveUser"
+      @close="showEditModal = false"
+    >
+      <MoleculeFieldset>
+        <div class="flex flex-col items-center gap-4 mb-6">
+          <div class="avatar">
+            <div class="w-20 rounded-full ring ring-primary ring-offset-base-100 ring-offset-2">
+              <img v-if="form.imageId" :src="getImageUrl(form.imageId)" />
+              <div
+                v-else
+                class="bg-gray-200 w-full h-full flex items-center justify-center font-bold text-xl"
               >
-                <option value="mr">Mr</option>
-                <option value="ms">Ms</option>
-                <option value="other">Other</option>
-              </select>
-              <span v-if="errors.salutation" class="text-error text-xs mt-1">{{ errors.salutation }}</span>
+                {{ form.username?.charAt(0).toUpperCase() }}
+              </div>
             </div>
+          </div>
+          <input
+            type="file"
+            class="file-input file-input-bordered file-input-xs w-full max-w-xs"
+            accept="image/*"
+            @change="handleFileChange"
+          />
+        </div>
 
-            <div v-if="form.salutation === 'other'" class="form-control w-full">
-                 <label class="label"><span class="label-text font-semibold">Specify Salutation</span></label>
-                 <input 
-                   v-model="form.salutationOther" 
-                   type="text" 
-                   :class="['input input-bordered w-full', {'input-error': errors.salutationOther}]"
-                 />
-                 <span v-if="errors.salutationOther" class="text-error text-xs mt-1">{{ errors.salutationOther }}</span>
-            </div>
+        <div class="form-control w-full mb-2 p-2 bg-base-200 rounded-lg">
+          <label class="cursor-pointer label justify-between">
+            <span class="label-text font-bold">Account Active?</span>
+            <input type="checkbox" v-model="form.isActive" class="checkbox checkbox-success" />
+          </label>
+        </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                 <div>
-                    <LabeledInput
-                        v-model="form.username"
-                        type="text"
-                        :input-class="['w-full', {'input-error': errors.username}]"
-                        placeholder="Username"
-                        label="Username"
-                        id="edit-username"
-                        name="username"
-                    />
-                    <span v-if="errors.username" class="text-error text-xs mt-1 ml-1">{{ errors.username }}</span>
-                 </div>
-                 <div>
-                    <LabeledInput
-                        v-model="form.email"
-                        type="email"
-                        :input-class="['w-full', {'input-error': errors.email}]"
-                        placeholder="Email"
-                        label="Email"
-                        id="edit-email"
-                        name="email"
-                    />
-                    <span v-if="errors.email" class="text-error text-xs mt-1 ml-1">{{ errors.email }}</span>
-                 </div>
-            </div>
+        <div class="form-control w-full">
+          <label class="label"><span class="label-text font-semibold">Salutation</span></label>
+          <select
+            v-model="form.salutation"
+            :class="['select select-bordered w-full', { 'select-error': errors.salutation }]"
+          >
+            <option value="mr">Mr</option>
+            <option value="ms">Ms</option>
+            <option value="other">Other</option>
+          </select>
+          <span v-if="errors.salutation" class="text-error text-xs mt-1">{{
+            errors.salutation
+          }}</span>
+        </div>
 
-            <div class="form-control w-full">
-              <label class="label"><span class="label-text font-semibold">Role</span></label>
-              <select v-model="form.userType" class="select select-bordered w-full">
-                <option v-for="role in userTypes" :key="role" :value="role">{{ role }}</option>
-              </select>
-            </div>
+        <div v-if="form.salutation === 'other'" class="form-control w-full">
+          <label class="label"
+            ><span class="label-text font-semibold">Specify Salutation</span></label
+          >
+          <input
+            v-model="form.salutationOther"
+            type="text"
+            :class="['input input-bordered w-full', { 'input-error': errors.salutationOther }]"
+          />
+          <span v-if="errors.salutationOther" class="text-error text-xs mt-1">{{
+            errors.salutationOther
+          }}</span>
+        </div>
 
-            <div class="form-control w-full">
-              <label class="label"><span class="label-text font-semibold">Country</span></label>
-              <select 
-                v-model="form.country" 
-                :class="['select select-bordered w-full', {'select-error': errors.country}]"
-              >
-                <option v-for="c in countries" :key="c" :value="c">{{ c }}</option>
-              </select>
-              <span v-if="errors.country" class="text-error text-xs mt-1">{{ errors.country }}</span>
-            </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <LabeledInput
+              v-model="form.username"
+              type="text"
+              :input-class="['w-full', { 'input-error': errors.username }]"
+              placeholder="Username"
+              label="Username"
+              id="edit-username"
+              name="username"
+            />
+            <span v-if="errors.username" class="text-error text-xs mt-1 ml-1">{{
+              errors.username
+            }}</span>
+          </div>
+          <div>
+            <LabeledInput
+              v-model="form.email"
+              type="email"
+              :input-class="['w-full', { 'input-error': errors.email }]"
+              placeholder="Email"
+              label="Email"
+              id="edit-email"
+              name="email"
+            />
+            <span v-if="errors.email" class="text-error text-xs mt-1 ml-1">{{ errors.email }}</span>
+          </div>
+        </div>
 
-            <div class="modal-action">
-              <button type="button" class="btn" @click="showEditModal = false" :disabled="updating">Cancel</button>
-              <AtomButton 
-                 class="btn-primary" 
-                 :label="updating ? 'Saving...' : 'Save Changes'" 
-                 type="submit" 
-                 :disabled="updating"
-               />
-            </div>
-          </MoleculeFieldset>
-        </form>
-      </div>
-      <form method="dialog" class="modal-backdrop">
-         <button @click="showEditModal = false" :disabled="updating">close</button>
-      </form>
-    </dialog>
+        <div class="form-control w-full">
+          <label class="label"><span class="label-text font-semibold">Role</span></label>
+          <select v-model="form.userType" class="select select-bordered w-full">
+            <option v-for="role in userTypes" :key="role" :value="role">{{ role }}</option>
+          </select>
+        </div>
 
-    <dialog class="modal" :class="{ 'modal-open': showDeleteModal }">
-      <div class="modal-box">
-        <h3 class="font-bold text-lg text-error">Confirm Deletion</h3>
-        <p class="py-4">
-          Are you sure you want to delete <span class="font-bold">{{ userToDelete?.username }}</span>?
-          This action cannot be undone.
-        </p>
+        <div class="form-control w-full">
+          <label class="label"><span class="label-text font-semibold">Country</span></label>
+          <select
+            v-model="form.country"
+            :class="['select select-bordered w-full', { 'select-error': errors.country }]"
+          >
+            <option v-for="c in countries" :key="c" :value="c">{{ c }}</option>
+          </select>
+          <span v-if="errors.country" class="text-error text-xs mt-1">{{ errors.country }}</span>
+        </div>
+
         <div class="modal-action">
-          <button class="btn" @click="showDeleteModal = false">Cancel</button>
-          <button class="btn btn-error" @click="confirmDelete">Delete User</button>
+          <button type="button" class="btn" @click="showEditModal = false" :disabled="updating">
+            Cancel
+          </button>
+          <AtomButton
+            class="btn-primary"
+            :label="updating ? 'Saving...' : 'Save Changes'"
+            type="submit"
+            :disabled="updating"
+          />
         </div>
-      </div>
-      <form method="dialog" class="modal-backdrop">
-         <button @click="showDeleteModal = false">close</button>
-      </form>
-    </dialog>
+      </MoleculeFieldset>
+    </EditModal>
 
+    <MoleculeConfirmModal
+      :show="showDeleteModal"
+      title="Confirm Deletion"
+      :message="`Are you sure you want to delete ${userToDelete?.username}? This action cannot be undone.`"
+      confirm-label="Delete User"
+      @confirm="confirmDelete"
+      @cancel="showDeleteModal = false"
+    />
   </div>
 </template>

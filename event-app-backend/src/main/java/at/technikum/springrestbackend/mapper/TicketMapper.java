@@ -11,6 +11,8 @@ public interface TicketMapper {
     @Mapping(source = "event.id", target = "eventId")
     @Mapping(source = "user.id", target = "userId")
     @Mapping(source = "createdDate", target = "purchaseDate")
+    @Mapping(source = "event.title", target = "eventName")
+    @Mapping(source = "user.username", target = "userName")
     TicketDto toDto(TicketEntity ticketEntity);
 
     @Mapping(source = "eventId", target = "event.id")

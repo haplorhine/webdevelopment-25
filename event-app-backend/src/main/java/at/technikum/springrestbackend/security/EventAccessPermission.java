@@ -23,6 +23,10 @@ public class EventAccessPermission implements AccessPermission {
     public boolean hasPermission(Authentication authentication, UUID resourceId) {
         UserPrincipal principal = (UserPrincipal) authentication.getPrincipal();
 
+        if (resourceId.equals(principal.getId()) && principal.getRole().equals("HOST")) {
+            return true;
+        }
+
         return eventRepository.findById(resourceId)
                 .map(event -> {
                     return event.getHost().getId().equals(principal.getId());

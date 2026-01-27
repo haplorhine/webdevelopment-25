@@ -11,7 +11,9 @@ import at.technikum.springrestbackend.repositories.EventRepository;
 import at.technikum.springrestbackend.repositories.TicketRepository;
 
 import at.technikum.springrestbackend.repositories.UserRepository;
+import at.technikum.springrestbackend.security.UserPrincipal;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -47,8 +49,7 @@ public class TicketService {
         UserEntity user = userRepository.findById(ticketDto.getUserId())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
 
-        validateEventDates(event);
-        validateSalesDates(event);
+
         validateAvailability(event);
         validateActiveSales(event);
 
@@ -62,18 +63,6 @@ public class TicketService {
 
         TicketEntity savedEntity = ticketRepository.save(ticketEntity);
         return ticketMapper.toDto(savedEntity);
-    }
-
-    private void validateEventDates(EventEntity event) {
-        if (event.getEndDate().isBefore(event.getStartDate())) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Event End Date cannot be before Start Date.");
-        }
-    }
-
-    private void validateSalesDates(EventEntity event) {
-        if (event.getSalesEnd().isBefore(event.getSalesStart())) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Sales End Date cannot be before Sales Start Date.");
-        }
     }
 
     private void validateAvailability(EventEntity event) {
@@ -108,5 +97,9 @@ public class TicketService {
 
     public void deleteTicketById(UUID id) {
         ticketRepository.deleteById(id);
+    }
+
+    public List<TicketDto> getTicketsByUserId(UUID userId) {
+        return ticketRepository.findAllByUserId(userId).stream().map(ticketMapper::toDto).toList();
     }
 }

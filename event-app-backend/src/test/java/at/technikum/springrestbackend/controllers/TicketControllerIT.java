@@ -3,6 +3,7 @@ package at.technikum.springrestbackend.controllers;
 import at.technikum.springrestbackend.dto.TicketDto;
 import at.technikum.springrestbackend.entity.TicketStatus;
 import at.technikum.springrestbackend.services.TicketService;
+import at.technikum.springrestbackend.security.UserPrincipal;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,6 +29,9 @@ import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.test.web.servlet.request.RequestPostProcessor;
 
 @SpringBootTest
 @Testcontainers
@@ -96,13 +100,23 @@ class TicketControllerIT {
         resultActions.andExpect(status().isForbidden());
     }
 
+    private RequestPostProcessor userPrincipal(UUID userId) {
+        return SecurityMockMvcRequestPostProcessors.authentication(
+            new UsernamePasswordAuthenticationToken(
+                new UserPrincipal(userId, "testuser", "password", "USER", true),
+                null,
+                java.util.List.of(new org.springframework.security.core.authority.SimpleGrantedAuthority("USER"))
+            )
+        );
+    }
+
     @Test
-    @WithMockUser(roles = "USER")
     void authenticatedUser_createTicket_returnsCreatedTicket() throws Exception {
         // given
+        UUID userId = UUID.randomUUID();
         TicketDto request = new TicketDto();
         request.setEventId(UUID.randomUUID());
-        request.setUserId(UUID.randomUUID());
+        request.setUserId(userId);
         request.setPurchaseDate(LocalDateTime.now());
         request.setStatus(TicketStatus.ACTIVE);
 
@@ -118,7 +132,8 @@ class TicketControllerIT {
         // when
         ResultActions resultActions = mvc.perform(post("/tickets")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(request)));
+                .content(objectMapper.writeValueAsString(request))
+                .with(userPrincipal(userId)));
 
         // then
         resultActions.andExpect(status().isOk());

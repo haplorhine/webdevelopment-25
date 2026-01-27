@@ -14,11 +14,14 @@ public interface UserMapper {
 
     // image wird im Service gesetzt
     @Mapping(target = "image", ignore = true)
+    @Mapping(target = "active", source = "isActive")
     UserEntity toEntity(UserCreationDto dto);
 
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "createdDate", ignore = true)
+
     // image wird im Service aktualisiert
     @Mapping(target = "image", ignore = true)
+    @Mapping(target = "active", source = "isActive")
     void updateEntityFromDto(UserCreationDto dto, @MappingTarget UserEntity entity);
 }

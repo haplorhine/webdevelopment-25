@@ -3,6 +3,7 @@ package at.technikum.springrestbackend.controllers;
 import at.technikum.springrestbackend.dto.EventDto;
 import at.technikum.springrestbackend.entity.Category;
 import at.technikum.springrestbackend.services.EventService;
+import at.technikum.springrestbackend.security.UserPrincipal;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,6 +11,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
 import org.springframework.http.MediaType;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
@@ -32,6 +34,8 @@ import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors;
+import org.springframework.test.web.servlet.request.RequestPostProcessor;
 
 @SpringBootTest
 @Testcontainers
@@ -51,6 +55,16 @@ class EventControllerIT {
 
     @MockitoBean
     private EventService eventService;
+
+    private RequestPostProcessor hostPrincipal(UUID hostId) {
+        return SecurityMockMvcRequestPostProcessors.authentication(
+            new UsernamePasswordAuthenticationToken(
+                new UserPrincipal(hostId, "hostuser", "password", "HOST", true),
+                null,
+                java.util.List.of(new org.springframework.security.core.authority.SimpleGrantedAuthority("HOST"))
+            )
+        );
+    }
 
     @Test
     @WithMockUser(roles = "USER")
@@ -78,10 +92,10 @@ class EventControllerIT {
     }
 
     @Test
-    @WithMockUser(authorities = "HOST")
     void hostUser_createEvent_returnsCreatedEvent() throws Exception {
         // given
         LocalDateTime now = LocalDateTime.now();
+        UUID hostId = UUID.randomUUID();
         EventDto request = new EventDto();
         request.setTitle("New Event");
         request.setCategory(Category.CONCERT);
@@ -92,7 +106,7 @@ class EventControllerIT {
         request.setSalesStart(now.plusDays(1));
         request.setSalesEnd(now.plusDays(9));
         request.setTicketPrice(25.0);
-        request.setHostId(UUID.randomUUID());
+        request.setHostId(hostId);
 
         EventDto response = new EventDto();
         response.setId(UUID.randomUUID());
@@ -104,7 +118,8 @@ class EventControllerIT {
         // when
         ResultActions resultActions = mvc.perform(post("/events")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(request)));
+                .content(objectMapper.writeValueAsString(request))
+                .with(hostPrincipal(hostId)));
 
         // then
         resultActions.andExpect(status().isOk());
@@ -112,10 +127,11 @@ class EventControllerIT {
     }
 
     @Test
-    @WithMockUser(roles = "USER")
     void regularUser_createEvent_returnsForbidden() throws Exception {
         // given
         LocalDateTime now = LocalDateTime.now();
+        UUID hostId = UUID.randomUUID();
+        UUID userId = UUID.randomUUID(); // Simulierter User, der NICHT Host ist
         EventDto request = new EventDto();
         request.setTitle("New Event");
         request.setLocation("Vienna");
@@ -124,12 +140,14 @@ class EventControllerIT {
         request.setMaxParticipants(100);
         request.setSalesStart(now.plusDays(1));
         request.setSalesEnd(now.plusDays(9));
-        request.setHostId(UUID.randomUUID());
+        request.setHostId(hostId); // HostId ist nicht gleich userId
 
         // when
         ResultActions resultActions = mvc.perform(post("/events")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(request)));
+                .content(objectMapper.writeValueAsString(request))
+                .with(hostPrincipal(userId)) // User ist nicht Host
+        );
 
         // then
         resultActions.andExpect(status().isForbidden());

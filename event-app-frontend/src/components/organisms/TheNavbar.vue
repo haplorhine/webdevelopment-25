@@ -22,10 +22,12 @@ const getImageUrl = (imageId) => {
 }
 
 const displayedLinks = computed(() => {
-  if (userStore.role === 'ADMIN') {
+  if (userStore.isAdmin) {
     return [
       { to: '/events', label: 'Events' },
+      { to: '/event-management', label: 'Event Management' },
       { to: '/user-management', label: 'User Management' },
+      { to: '/ticket-management', label: 'Ticket Management' },
     ]
   }
 
@@ -35,7 +37,8 @@ const displayedLinks = computed(() => {
     currentLinks = currentLinks.filter((link) => link.label !== 'Register')
   }
 
-  if (userStore.role === 'HOST') {
+  if (userStore.isHost) {
+    currentLinks.push({ to: '/event-management', label: 'Event Management' })
     currentLinks.push({ to: '/create-event', label: 'Create Event' })
   }
 
@@ -105,7 +108,7 @@ onMounted(() => {
               src="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp"
             />
           </div>
-          </div>
+        </div>
         <ul
           tabindex="-1"
           class="menu menu-sm dropdown-content bg-base-100 rounded-box z-1 mt-3 w-52 p-2 shadow"
@@ -116,10 +119,15 @@ onMounted(() => {
               <span class="badge">Customize</span>
             </RouterLink>
           </li>
+          <li>
+            <RouterLink to="/my-tickets" class="justify-between"> My Tickets </RouterLink>
+          </li>
           <li><a @click="logout">Logout</a></li>
         </ul>
       </div>
-      <RouterLink v-else to="/login"><LoginButton /></RouterLink>
+      <RouterLink v-else to="/login">
+        <LoginButton />
+      </RouterLink>
     </div>
   </div>
 </template>
