@@ -29,15 +29,8 @@ public class EventController {
     }
 
     @PostMapping("/events")
-    @PreAuthorize("hasAuthority('HOST')")
+    @PreAuthorize("hasPermission(#eventDto.hostId, T(at.technikum.springrestbackend.entity.EventEntity).getName(), 'create')")
     public EventDto createEvent(@RequestBody @Valid EventDto eventDto) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication == null || !(authentication.getPrincipal() instanceof UserPrincipal userPrincipal)) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "No user context");
-        }
-        if (!userPrincipal.getId().equals(eventDto.getHostId())) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Forbidden");
-        }
         return eventService.createEvent(eventDto);
     }
 
