@@ -127,10 +127,11 @@ class EventControllerIT {
     }
 
     @Test
-    @WithMockUser(roles = "USER")
     void regularUser_createEvent_returnsForbidden() throws Exception {
         // given
         LocalDateTime now = LocalDateTime.now();
+        UUID hostId = UUID.randomUUID();
+        UUID userId = UUID.randomUUID(); // Simulierter User, der NICHT Host ist
         EventDto request = new EventDto();
         request.setTitle("New Event");
         request.setLocation("Vienna");
@@ -139,12 +140,14 @@ class EventControllerIT {
         request.setMaxParticipants(100);
         request.setSalesStart(now.plusDays(1));
         request.setSalesEnd(now.plusDays(9));
-        request.setHostId(UUID.randomUUID());
+        request.setHostId(hostId); // HostId ist nicht gleich userId
 
         // when
         ResultActions resultActions = mvc.perform(post("/events")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(request)));
+                .content(objectMapper.writeValueAsString(request))
+                .with(hostPrincipal(userId)) // User ist nicht Host
+        );
 
         // then
         resultActions.andExpect(status().isForbidden());

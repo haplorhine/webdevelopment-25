@@ -15,9 +15,8 @@ public class TicketAccessPermission implements AccessPermission {
 
     @Override
     public boolean hasPermission(Authentication authentication, UUID resourceId) {
-        if (authentication == null || !(authentication.getPrincipal() instanceof UserPrincipal userPrincipal)) {
-            return false;
-        }
-        return userPrincipal.getId().equals(resourceId);
+       UserPrincipal principal = (UserPrincipal) authentication.getPrincipal();
+
+       return principal.getId().equals(resourceId);
     }
 }

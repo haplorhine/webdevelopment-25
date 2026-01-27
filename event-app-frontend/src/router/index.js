@@ -23,22 +23,18 @@ const routes = [
   { path: '/', component: HomeView },
   { path: '/events', component: EventView },
   { path: '/events/:id', component: EventDetailView },
-  { path: '/create-event', component: CreateEventView },
+  { path: '/create-event', component: CreateEventView, meta: { requiresAuth: true } },
   { path: '/about', component: AboutView },
   { path: '/imprint', component: ImprintView },
   { path: '/help', component: HelpView },
   { path: '/login', component: LoginView },
   { path: '/register', component: RegisterView },
   { path: '/forgot-password', component: ForgotPasswordView },
-  { path: '/profile', component: ProfileView },
-  { path: '/my-tickets', component: MyTicketsView },
+  { path: '/profile', component: ProfileView, meta: { requiresAuth: true } },
+  { path: '/my-tickets', component: MyTicketsView, meta: { requiresAuth: true } },
   { path: '/user-management', component: UserManagementView, meta: { requiresAdmin: true } },
   { path: '/ticket-management', component: TicketManagementView, meta: { requiresAdmin: true } },
-  {
-    path: '/event-management',
-    component: EventManagementView,
-    meta: { requiresAdminOrHost: true },
-  },
+  { path: '/event-management', component: EventManagementView, meta: { requiresAdminOrHost: true } },
 ]
 
 const router = createRouter({
@@ -48,6 +44,10 @@ const router = createRouter({
 
 router.beforeEach((to, from, next) => {
   const userStore = useUserStore()
+
+  if (to.meta.requiresAuth && !userStore.isAuthenticated) {
+    return next('/') 
+  }
 
   if (to.meta.requiresAdmin) {
     if (!userStore.isAdmin) {
